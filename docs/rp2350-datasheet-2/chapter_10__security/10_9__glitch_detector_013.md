@@ -1,0 +1,90 @@
+---
+source_pdf: rp2350-datasheet-2.pdf
+repository: llm_database
+chapter: Chapter 10. Security
+section: 10.9. Glitch detector
+pages: 870-870
+type: technical_spec
+generated_at: 2026-02-28T17:43:10.557178+00:00
+---
+
+# 10.9. Glitch detector
+
+RP2350 Datasheet
+
+assertion of this IRQ)
+• Whether a given channel can have its interrupt pending flag set/cleared via this IRQ’s INTF/INTS registers
+
+For a bus access to view/configure an IRQ, it must have a security level greater than or equal to the IRQ’s security level.
+
+For an IRQ to observe a channel’s interrupt pending flag, the IRQ must have a security level greater than or equal to the
+
+channel’s security level. Consequently, for a bus to observe a channel’s interrupt status, the bus access security level
+
+must be greater than or equal to the channel’s security level.
+
+For an IRQ to observe a channel’s interrupt pending flag, it must have a security level greater than or equal to the
+
+channel’s security level.
+
+There is only one INTR register. Which channels' interrupts can be observed and cleared through INTR is determined by
+
+comparing channel security levels to the security level of the INTR bus access.
+
+10.8. OTP
+
+RP2350 contains 8 kB of OTP storage, organised as 4096 × 24-bit rows with hardware ECC protection. This is the only
+
+mutable, on-die, non-volatile storage. Boot signing keys and decryption keys are stored in OTP, and as such it is a vital
+
+part of the security architecture. This section gives a brief summary of OTP hardware protection features; Chapter 13
+
+documents the hardware in full.
+
+The RP2350 OTP subystem adds a hardware layer on top of the OTP storage array, to protect sensitive contents:
+
+• OTP is protected at a 128-byte page granularity (see Section 13.5)
+
+◦Each page can be fully accessible, read-only, or fully inacessible
+
+◦Locks are defined separately for Secure, Non-secure and bootloader access
+
+◦Programming OTP lock locations starting at PAGE0_LOCK0 applies locks permanently
+
+◦Writing to registers starting at SW_LOCK0 advances locks to a less-permissive state until the next OTP reset
+• OTP control registers used to access the SBPI interface are hardwired for Secure access only
+
+◦The SBPI interface is used to program the OTP and configure power supply and analogue hardware
+• The guarded read aliases provide higher assurance against deliberate OTP power supply manipulation during
+
+reads (Section 13.1.1)
+• Hardware reads the OTP array at startup for security hardware configuration (Section 13.3.4)
+
+◦The critical flags (Section 13.4) enable secure boot, enable the glitch detectors, and disable debug
+
+◦The OTP hardware access keys (Section 13.5.2) provide further protection for OTP pages
+
+◦The debug keys (Section 3.5.9.2) are an additional mechanism to conditionally lock down debug access
+
+OTP also contains configuration for the RP2350 bootrom, particularly its secure boot implementation. Section 13.10
+
+lists all predefined OTP data locations. Boot configuration is stored in page 1, starting from BOOT_FLAGS0.
+
+The bootrom can load and run code stored in OTP; see the bootrom documentation in Section 5.10.7, and the OTP data
+
+listings starting from OTPBOOT_SRC. When secure boot is enabled, code loaded from OTP is subject to all of the usual
+
+requirements for image signing and versioning, so this code can form part of your secure boot chain. The chain_image()
+
+ROM API allows your OTP-resident bootloader to call back into the ROM to verify the next boot stage that it has loaded.
+
+10.9. Glitch detector
+
+The glitch detector detects loss of setup and hold margin in the system clock domain, which may be caused by
+
+deliberate external manipulation of the system clock or core supply voltage. When it detects loss, the glitch detector
+
+triggers a system reset rather than allowing software to continue to execute in a possibly undefined state. It responds
+
+10.8. OTP
+869
