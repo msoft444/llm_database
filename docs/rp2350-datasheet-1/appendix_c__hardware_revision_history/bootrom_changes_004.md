@@ -1,0 +1,13 @@
+---
+source_pdf: rp2350-datasheet-1.pdf
+repository: llm_database
+chapter: Appendix C: Hardware revision history
+section: Bootrom changes
+pages: 1356-1355
+type: technical_spec
+generated_at: 2026-02-28T17:22:56.644477+00:00
+---
+
+# Bootrom changes
+
+

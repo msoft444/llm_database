@@ -1,0 +1,13 @@
+---
+source_pdf: rp2350-datasheet-1.pdf
+repository: llm_database
+chapter: Appendix A: Register field types
+section: Changes from RP2040
+pages: 1350-1349
+type: technical_spec
+generated_at: 2026-02-28T17:22:56.644477+00:00
+---
+
+# Changes from RP2040
+
+

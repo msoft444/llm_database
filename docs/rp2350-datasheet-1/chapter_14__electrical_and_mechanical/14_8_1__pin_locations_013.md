@@ -1,0 +1,269 @@
+---
+source_pdf: rp2350-datasheet-1.pdf
+repository: llm_database
+chapter: Chapter 14. Electrical and mechanical
+section: 14.8.1. Pin locations
+pages: 1334-1335
+type: technical_spec
+generated_at: 2026-02-28T17:22:56.644477+00:00
+---
+
+# 14.8.1. Pin locations
+
+14.7. Compliance
+RP2350 QFN-60 is compliant to Moisture Sensitivity Level 1. The Moisture Sensitivity Level compliance of RP2350 QFN-
+80 is yet to be fully characterised, and details will follow in a future datasheet update.
+RP2350 is compliant to the requirement of REACH Substances of Very High Concern (SVHC), EU ECHA directive.
+RP2350 is compliant to the requirement and standard of Controlled Environment-related Substance of RoHS directive
+(EU) 2011/65/EU and directive (EU) 2015/863.
+Raspberry Pi Ltd carried out the following Package Level reliability qualifications on RP2350:
+• Temperature Cycling per JESD22-A104
+• HAST per JESD22-A110
+• HTSL per JESD22-A103
+• MSL level per JESD22-A113
+The following Silicon Level reliability qualification were also carried out:
+• HTOL per JESD22-A108F
+NOTE
+A tin whiskers test is not performed. RP2350 is a bottom-only termination device in the QFN-60 and QFN-80
+packages, therefore JEDEC standard (JESD201A) is not applicable.
+14.8. Pinout
+14.8.1. Pin locations
+14.8.1.1. QFN-60 (RP2350A)
+RP2350 Datasheet
+14.7. Compliance
+1333
+
+
+VREG_AVDD
+VREG_PGND
+IOVDD
+GPIO18
+GPIO11
+GPIO10
+GND
+TOP VIEW
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+GPIO9
+GPIO8
+IOVDD
+GPIO7
+GPIO6
+GPIO5
+GPIO4
+DVDD
+GPIO3
+GPIO2
+GPIO1
+GPIO0
+IOVDD
+GPIO20
+GPIO21
+GPIO22
+GPIO23
+GPIO24
+GPIO25
+IOVDD
+DVDD
+GPIO26_ADC0
+GPIO27_ADC1
+GPIO28_ADC2
+GPIO29_ADC3
+ADC_AVDD
+IOVDD
+VREG_LX
+VREG_VIN
+VREG_FB
+USB_DM
+USB_DP
+USB_OTP_VDD
+QSPI_IOVDD
+QSPI_SD3
+QSPI_SCLK
+QSPI_SD0
+QSPI_SD2
+QSPI_SD1
+QSPI_SS
+45
+60 59 58 57 56 55 54 53 52 51 50 49 48
+16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+44
+43
+42
+41
+40
+39
+38
+37
+36
+35
+34
+33
+32
+GPIO19
+31
+GPIO17
+GPIO16
+RUN
+SWDIO
+SWCLK
+DVDD
+XOUT
+XIN
+IOVDD
+GPIO15
+GPIO14
+GPIO13
+GPIO12
+47 46
+Figure 148. RP2350
+Pinout for QFN-60
+7×7mm
+14.8.1.2. QFN-80 (RP2350B)
+VREG_AVDD
+VREG_PGND
+VREG_LX
+VREG_VIN
+VREG_FB
+USB_DM
+USB_DP
+RUN
+SWDIO
+GPIO11
+GPIO15
+GND
+TOP VIEW
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+GPIO14
+GPIO13
+GPIO12
+GPIO19
+GPIO18
+15
+16
+17
+18
+19
+GPIO20 20
+GPIO17
+GPIO16
+IOVDD
+DVDD
+GPIO11
+GPIO10
+GPIO9
+GPIO8
+IOVDD
+GPIO7
+GPIO6
+GPIO5
+GPIO4
+GPIO38
+GPIO39
+GPIO40_ADC0
+IOVDD
+DVDD
+GPIO41_ADC1
+GPIO42_ADC2
+GPIO43_ADC3
+GPIO44_ADC4
+GPIO45_ADC5
+GPIO46_ADC6
+GPIO47_ADC7
+ADC_AVDD
+IOVDD
+USB_OTP_VDD
+QSPI_IOVDD
+QSPI_SD3
+QSPI_SCLK
+QSPI_SD0
+QSPI_SD2
+QSPI_SD1
+QSPI_SS
+IOVDD
+GPIO0
+GPIO1
+GPIO2
+GPIO3
+60
+80 79 78 77 76 75 74 73 72 71 70 69 68
+21 22 23 24 25 26 27 28 29 30 31 32 33 34 35
+59
+58
+57
+56
+55
+54
+53
+52
+51
+50
+49
+48
+47
+SWCLK
+DVDD
+XOUT
+GPIO32
+GPIO31
+36 37 38 39 40
+GPIO30
+GPIO29
+GPIO28
+XIN
+IOVDD
+GPIO27
+GPIO26
+GPIO25
+GPIO24
+IOVDD
+GPIO23
+GPIO22
+GPIO21
+67 66 65 64 63 62 61
+GPIO33
+GPIO34
+GPIO35
+GPIO36
+GPIO37
+46
+45
+44
+43
+42
+IOVDD
+41
+Figure 149. RP2350
+Pinout for QFN-80
+10×10mm
+RP2350 Datasheet
+14.8. Pinout
+1334
+

@@ -1,0 +1,341 @@
+---
+source_pdf: rp2350-datasheet-1.pdf
+repository: llm_database
+chapter: Chapter 14. Electrical and mechanical
+section: 14.9.7. Power consumption
+pages: 1346-1349
+type: technical_spec
+generated_at: 2026-02-28T17:22:56.644477+00:00
+---
+
+# 14.9.7. Power consumption
+
+Parameter
+Description
+Min
+Typ
+Max
+Units
+VOUT_OKTH.DEASSERT
+VOUT_OK de-
+assertion
+threshold
+84
+87
+90
+% of selected
+output voltage
+fsw
+switching
+frequency
+3
+MHz
+Efficiency (V
+OUT=1.1V)
+Iload=10mA,
+VREG_VIN=2.7V
+74
+%
+Iload=10mA,
+VREG_VIN=3.3V
+70
+%
+Iload=10mA,
+VREG_VIN=5.5V
+59
+%
+Iload=100mA,
+VREG_VIN=2.7V
+70
+%
+Iload=100mA,
+VREG_VIN=3.3V
+72
+%
+Iload=100mA,
+VREG_VIN=5.5V
+72
+%
+Iload=200mA,
+VREG_VIN=2.7V
+70
+%
+Iload=200mA,
+VREG_VIN=3.3V
+59
+%
+Iload=200mA,
+VREG_VIN=5.5V
+63
+%
+WARNING
+VOUT can exceed the maximum core supply (DVDD). While there is a voltage limit to prevent this happening
+accidentally, the limit can be disabled under software control. For reliable operation DVDD should not exceed its
+maximum voltage rating.
+Figure 151. Typical
+Regulator Efficiency,
+Vout=1.1V,
+VREG_VIN=3.3V.
+14.9.7. Power consumption
+RP2350 Datasheet
+14.9. Electrical specifications
+1345
+
+
+14.9.7.1. Peripheral power consumption
+Baseline readings are taken with only clock sources and essential peripherals (BUSCTRL, BUSFAB, VREG, Resets, ROM,
+SRAMs) active in the WAKE_EN0/WAKE_EN1 registers. Clocks are set to default clock settings.
+Each peripheral is activated in turn by enabling all clock sources for the peripheral in the WAKE_EN0/WAKE_EN1 registers.
+Current consumption is the increase in current when the peripheral clocks are enabled.
+Table 1443. Baseline
+power consumption
+Peripheral
+Typical DVDD Current Consumption (μA/MHz)
+DMA
+2.6
+I2C0
+3
+I2C1
+3.6
+IO + Pads
+24.5
+PWM
+9.9
+SIO
+2
+SHA256
+0.1
+SPI0
+1.7
+SPI1
+1.4
+Timer 0
+0.8
+Timer 1
+0.6
+TRNG
+0.8
+UART0
+2.6
+UART1
+3.6
+Watchdog
+1.1
+XIP
+37.6
+Because of fixed reference clocks of 48MHz, as well as the variable system clock input, ADC and USBCTRL power
+consumption does not vary linearly with system clock (as it does for other peripherals which only have system and/or
+peripheral clock inputs). The following table shows absolute DVDD current consumption of the ADC and USBCTRL
+blocks at standard clocks settings:
+Table 1444. Baseline
+power consumption
+for ADC and USBCTRL
+Peripheral
+Typical DVDD Current Consumption (mA)
+ADC
+0.14
+USBCTRL
+1.25
+14.9.7.2. Power consumption in Low Power states
+Table 1445 shows the typical power consumption in low power states P1.0 → P1.7. All voltage supplies are 3.3V (except
+DVDD which is supplied by the voltage regulator (in low power mode)), with the environment at room temperature.
+All GPIOs, SWDIO and SWCLK are pulled down internally, and not connected externally. QSPI is connected to
+W25Q16JVSSIQ flash device. USB PHY has been powered down, and the DP and DM pull-downs were enabled prior to
+entering the low power state. The USB cable remains connected to a host computer. The table also shows the power
+consumed when RUN is held low. This is not technically a low power state (the voltage regulator is in normal switching
+mode), but it is included for completeness.
+RP2350 Datasheet
+14.9. Electrical specifications
+1346
+
+
+Table 1445. Low
+Power States Power
+Consumption
+Low Power
+State
+VREG_VIN (μA)
+VREG_AVDD (μA)
+IOVDD (μA)
+QSPI_IOVDD (μA)
+ADC_IOVDD (μA)
+USB_OTP_VDD
+(μA)
+Total Power
+(μW)
+P1.0
+128
+0.5
+11
+22
+1
+3.5
+548
+P1.1
+77
+0.5
+11
+22
+1
+3.5
+380
+P1.2
+79
+0.5
+11
+22
+1
+3.5
+380
+P1.3
+26
+0.5
+11
+22
+1
+3.5
+204
+P1.4
+120
+0.5
+11
+22
+1
+3.5
+520
+P1.5
+67
+0.5
+11
+22
+1
+3.5
+345
+P1.6
+68
+0.5
+11
+22
+1
+3.5
+350
+P1.7
+19
+0.5
+11
+22
+1
+3.5
+188
+RUN=low
+40
+187
+69
+22
+1
+35
+1170
+14.9.7.3. Power consumption for typical user cases
+The following table details the typical power consumption of RP2350 in various example use cases. All measurements
+were taken using 3.3V voltage supplies (except DVDD, which is supplied by the voltage regulator (set to 1.1V)), with the
+environment at room temperature.
+SWD and SWCLK are not connected externally. GPIO0 and GPIO1 are connected to a Raspberry Pi Debug Probe (UART), but
+all other GPIOs are not connected (except USB Boot mode, where GPIO0 and GPIO1 are also unconnected). QSPI is
+connected to W25Q16JVSSIQ flash device, and USB is connected to a host.
+hello_serial, hello_usb and hello_adc are basic applications found in pico-examples where characters are constantly
+transmitted to a serial console.
+Table 1446. Power
+Consumption
+Use Case
+Condition
+VREG_VIN (μA)
+VREG_AVDD
+(μA)
+IOVDD (μA)
+QSPI_IOVDD
+(μA
+ADC_IOVDD
+(μA)
+USB_OTP_VDD
+(μA)
+Total Power
+(mW)
+USB Boot
+mode
+Bus Idle
+(average)
+6530
+220
+437
+22
+1
+375
+25
+During Boot
+(peak)
+6050
+During UF2
+write
+(average)
+1280
+hello_serial
+14690
+216
+506
+22
+1
+62
+51.1
+hello_usb
+14700
+216
+453
+22
+1
+570
+52.7
+hello_adc
+14680
+216
+506
+22
+142
+62
+51.6
+CoreMark
+benchmark
+Single core
+@150MHz
+11000
+212
+455
+22
+1
+90
+38.7
+14.9.7.3.1. Power consumption versus frequency
+There is a relationship between the core RP2350 frequency and the current consumed by the DVDD supply. Figure 152
+shows the measured results of a typical RP2350 device that continuously runs CoreMark benchmark tests on a single
+core at various core clock frequencies.
+RP2350 Datasheet
+14.9. Electrical specifications
+1347
+
+
+Figure 152. DVDD
+Current vs Core
+Frequency of a typical
+RP2350 device, whilst
+running CoreMark
+benchmark
+RP2350 Datasheet
+14.9. Electrical specifications
+1348
+
+
+## Images
+
+![img_p1346_00.png](images/img_p1346_00.png)
+
+![img_p1349_00.png](images/img_p1349_00.png)
+
