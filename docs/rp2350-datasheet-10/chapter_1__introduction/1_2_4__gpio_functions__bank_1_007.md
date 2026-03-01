@@ -1,0 +1,50 @@
+---
+source_pdf: rp2350-datasheet-10.pdf
+repository: llm_database
+chapter: Chapter 1. Introduction
+section: 1.2.4. GPIO functions (Bank 1)
+pages: 22-23
+type: technical_spec
+generated_at: 2026-03-01T12:20:14.494106+00:00
+---
+
+# 1.2.4. GPIO functions (Bank 1)
+
+1.2.4. GPIO functions (Bank 1)
+
+GPIO functions are also available on the six dedicated QSPI pins, which are usually used for flash execute-in-place, and
+
+on the USB DP/DM pins. These may become available for general-purpose use depending on the use case, for example,
+
+QSPI pins may not be needed for code execution if RP2350 is booting from internal OTP storage, or being controlled
+
+externally via SWD.
+
+| Pin | F0 | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| USB DP |  |  | UART1 TX | I2C0 SDA |  | SIO |  |  |  |  |  |  |
+
+*Table 5. GPIO Bank 1*
+
+1.2. Pinout reference
+21
+
+RP2350 Datasheet
+
+![Page 23 figure](images/fig_p0023.png)
+
+*Table 6. GPIO bank 1*
+
+| Function Name | Description |
+| --- | --- |
+| UARTx | Connect one of the internal PL011 UART peripherals to GPIO |
+| I2Cx | Connect one of the internal DW I2C peripherals to GPIO |
+| SIO | Software control of GPIO, from the single-cycle IO (SIO) block. The SIO function (F5) must be selected for the processors to drive a GPIO, but the input is always connected, so software can check the state of GPIOs at any time. |
+| QMI | QSPI memory interface peripheral, used for execute-in-place from external QSPI flash or PSRAM memory devices. |
+
+## Embedded Images
+
+![img_p0023_00.png](images/img_p0023_00.png)
+
+![img_p0023_01.png](images/img_p0023_01.png)
+
