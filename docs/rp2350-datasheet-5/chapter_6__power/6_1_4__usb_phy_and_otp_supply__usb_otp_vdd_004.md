@@ -1,0 +1,23 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 6. Power
+section: 6.1.4. USB PHY and OTP supply (USB_OTP_VDD)
+pages: 443-443
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 6.1.4. USB PHY and OTP supply (USB_OTP_VDD)
+
+6.1.4. USB PHY and OTP supply (USB_OTP_VDD)
+
+USB_OTP_VDD supplies the chip’s USB PHY and OTP memory, and should be powered at a nominal 3.3 V. To reduce the
+
+number of external power supplies, USB_OTP_VDD can use the same power source as the core voltage regulator analogue
+
+supply (VREG_AVDD), or digital IO supply (IOVDD), assuming IOVDD is also powered at 3.3 V. This supply must always be
+
+provided, even in applications where the USB PHY is never used.
+
+USB_OTP_VDD should be decoupled with a 100nF capacitor close to the chip’s USB_OTP_VDD pin.

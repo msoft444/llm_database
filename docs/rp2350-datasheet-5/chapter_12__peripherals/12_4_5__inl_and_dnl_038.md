@@ -1,0 +1,22 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.4.5. INL and DNL
+pages: 1074-1074
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 12.4.5. INL and DNL
+
+12.4.5. INL and DNL
+
+Details to follow.
+
+![Page 1074 figure](images/fig_p1074.png)
+
+## Embedded Images
+
+![img_p1074_00.png](images/img_p1074_00.png)
+

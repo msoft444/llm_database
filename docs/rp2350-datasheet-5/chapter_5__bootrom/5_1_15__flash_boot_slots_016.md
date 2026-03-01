@@ -1,0 +1,67 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 5. Bootrom
+section: 5.1.15. Flash boot slots
+pages: 361-362
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 5.1.15. Flash boot slots
+
+5.1.15. Flash boot slots
+
+The previous sections within this chapter discuss block loops starting within the first 4 kB of flash. Such a block loop
+
+contained either an IMAGE_DEF, a partition table (searched for IMAGE_DEFs), or an IMAGE_DEF and a PARTITION_TABLE (not
+
+searched).
+
+All the previously mentioned cases discovered their block loop in slot 0. Under certain circumstances, the neighbouring
+
+slot 1 is also searched.
+
+5.1. Bootrom concepts
+360
+
+RP2350 Datasheet
+
+Slot 0 starts at the beginning of flash, and has a size of n × 4 kB sectors. Slot 1 has the same size and follows
+
+immediately after slot 0. The value of n defaults to 1. Both slots are 4 kB in size, but you can override this value by
+
+specifying 
+a 
+value 
+in 
+FLASH_PARTITION_SLOT_SIZE 
+and 
+then 
+setting
+
+BOOT_FLAGS0.OVERRIDE_FLASH_PARTITION_SLOT_SIZE.
+
+Similarly to how a choice can be made between IMAGE_DEFs in A/B partitions, a choice can be made between A/B
+
+PARTITION_TABLEs via the two boot slots. This allows for versioning partition tables, targeted drag and drop of UF2s
+
+(Section 5.1.18) containing partition tables, etc. similar to the process used for images.
+
+Slot 1 is only of use when potentially using partition tables. In the simple case of an IMAGE_DEF and no PARTITION_TABLE
+
+found in a block loop starting in slot 0, that image likely actually overlays the space where slot 1 would be, but in any
+
+case, slot 1 is ignored since there is no PARTITION_TABLE.
+
+If slot 0 contains a PARTITION_TABLE or does not contain an IMAGE_DEF (including nothing/garbage in slot 0), slot 1 can be
+
+considered. As an optimisation, in the former case, the scanning of slot 1 can be prevented by setting the singleton flag
+
+in the PARTITION_TABLE.
+
+NOTE
+
+When IMAGE_DEFs are also present in the slots, the PARTITION_TABLE's VERSION item determines which of slot 0 and slot 1
+
+to use. The IMAGE_DEF metadata is ignored for the purpose of version comparison.

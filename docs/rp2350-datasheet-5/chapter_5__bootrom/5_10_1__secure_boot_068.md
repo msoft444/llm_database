@@ -1,0 +1,60 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 5. Bootrom
+section: 5.10.1. Secure boot
+pages: 430-431
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 5.10.1. Secure boot
+
+![Page 430 figure](images/fig_p0430.png)
+
+To enable secure boot on RP2350, you must:
+
+1. Set the SHA-256 hashes of the boot keys you will be using in BOOTKEY0_0 onwards
+
+2. Set bits in BOOT_FLAGS1.KEY_VALID for the keys you will be using
+
+3. Optionally set bits in BOOT_FLAGS1.KEY_INVALID for all unused keys — this is recommended to prevent a
+
+malicious actor installing their own boot keys at a later date
+
+4. Set CRIT1.SECURE_BOOT_ENABLE to turn on secure boot.
+
+These steps are the minimum for enabling secure boot support in the bootrom. See Section 10.5 for additional steps
+
+you must take to fully secure your device, such as disabling hardware debug.
+
+All of the above can be achieved with picotool. For example, when signing using picotool seal you can add an OTP JSON
+
+output file, to which it will add the relevant OTP field values to enable secure boot (BOOTKEY0_0,
+
+BOOT_FLAGS1.KEY_VALID and CRIT1.SECURE_BOOT_ENABLE):
+
+5.10. Example boot scenarios
+429
+
+RP2350 Datasheet
+
+![Page 431 figure](images/fig_p0431.png)
+
+$ picotool seal --sign unsigned.elf signed.elf private.pem /path/to/otp.json
+
+To configure the SDK to output this OTP JSON file when signing, add the following command to your CMakeLists.txt:
+
+pico_set_otp_key_output_file(target_name /path/to/otp.json)
+
+You can then issue the following command to write this OTP JSON file to the device, thus enabling secure boot:
+
+$ picotool otp load /path/to/otp.json
+
+Once secure boot is enabled, the bootrom verifies signatures of images from all supported media: flash, OTP, and
+
+images preloaded into SRAM via the UART and USB bootloaders. At this point you lose the ability to run unsigned
+
+images; during development you may find it more convenient to leave secure boot disabled. The next section describes
+
+the generation of signed images to run on a secure-boot-enabled device.

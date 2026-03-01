@@ -1,0 +1,49 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.6.5. Interrupts
+pages: 1103-1103
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 12.6.5. Interrupts
+
+![Page 1103 figure](images/fig_p1103.png)
+
+12.6.5. Interrupts
+
+Each channel can generate interrupts; these can be masked on a per-channel basis using one of the four identical
+
+interrupt enable registers, INTE0 through INTE3. There are three circumstances where a channel raises an interrupt
+
+request:
+
+• On the completion of each transfer sequence, if CTRL.IRQ_QUIET is disabled
+• On receiving a null trigger, if CTRL.IRQ_QUIET is enabled
+• On a read or write bus error
+
+The masked interrupt status is visible in the INTS registers; there is one bit for each channel. Interrupts are cleared by
+
+writing a bit mask to INTS. One idiom for acknowledging interrupts is to read INTS, then write the same value back, so
+
+only enabled interrupts are cleared.
+
+The RP2350 DMA provides four system IRQs, with independent masking and status registers (e.g. INTE0, INTE1). Any
+
+combination of channel interrupt requests can be routed to each system IRQ, though generally software only routes
+
+each channel interrupt to a single system IRQ. For example:
+
+• Some channels can be given a higher priority in the system interrupt controller, if they have particularly tight timing
+
+requirements.
+• In multiprocessor systems, different channel interrupts can be routed independently to different cores.
+• When channels are assigned to a mixture of security domains, IRQs can also be assigned, so that software in each
+
+security domain can get interrupts from its own channels.
+
+For debugging purposes, the INTF registers can force any channel interrupt to be asserted, which will cause assertion of
+
+any system IRQs that have that channel interrupt’s enable bit set in their respective INTE registers.

@@ -1,0 +1,97 @@
+---
+source_pdf: rp2350-datasheet-5.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.7.1. Overview
+pages: 1142-1143
+type: technical_spec
+generated_at: 2026-03-01T04:13:03.328193+00:00
+---
+
+# 12.7.1. Overview
+
+![Page 1142 figure](images/fig_p1142.png)
+
+Prerequisite knowledge required
+
+This section requires knowledge of the USB protocol. If you aren’t yet familiar with the USB protocol, we recommend
+
+the archive of the very useful USB Made Simple website. For formal definitions of the terminology used in this
+
+section, see the USB 2.0 Specification.
+
+RP2350 contains a USB 2.0 controller that can operate as either:
+
+• a Full Speed (FS) device (12 Mb/s)
+• a host that can communicate with both Low Speed (LS) (1.5 Mb/s) and Full Speed devices, including multiple
+
+downstream devices connected to a USB hub
+
+There is an integrated USB 1.1 PHY which interfaces the USB controller with the DP and DM pins of the chip. You may use
+
+this as 3.3 V GPIO when the USB controller is not in use.
+
+12.7. USB
+1141
+
+RP2350 Datasheet
+
+12.7.1.1. Features
+
+The USB controller hardware handles the low level USB protocol. The programmer must configure the controller, provide
+
+data buffers, and consume or provide data buffers in response to events on the bus. The controller interrupts the
+
+processor when it needs attention. The USB controller has 4 kB of dual-port SRAM (DPSRAM) used for configuration
+
+and data buffers.
+
+12.7.1.1.1. Device Mode
+
+In Device Mode, the USB controller has the following characteristics:
+
+• USB 2.0-compatible Full Speed device (12 Mb/s)
+• Supports up to 32 endpoints (Endpoints 0 → 15 in both in and out directions)
+• Supports Control, Isochronous (ISO), Bulk, and Interrupt endpoint types
+• Supports double buffering
+• 3840 bytes of usable buffer space in DPSRAM. This is equivalent to 60 × 64-byte buffers
+
+12.7.1.1.2. Host Mode
+
+In Host Mode, the USB controller can:
+
+• communicate with Full Speed (12 Mb/s) devices and Low Speed devices (1.5 Mb/s)
+• communicate with multiple devices via a USB hub, including Low Speed devices connected to a Full Speed hub
+• poll up to 15 interrupt endpoints in hardware (used by hubs to notify the host of connect/disconnect events, used
+
+by mice to notify the host of movement, etc.)
+
+12.7.1.1.3. USB DPRAM
+
+The USB controller uses 4 kB of dual-port SRAM (DPSRAM) to exchange data and control information with the
+
+controller. This is also referred to as dual-port RAM (DPRAM). One port is accessible from the system bus, clocked by
+
+clk_sys. The other port is accessible from the controller, clocked by clk_usb. The DPRAM is mapped in the system
+
+address space starting from 0x50100000, USBCTRL_DPRAM_BASE.
+
+The USB DPRAM supports 32-bit, 16-bit and 8-bit reads and writes. Writes complete in one cycle. Reads complete in two
+
+cycles.
+
+You can store general user data in USB DPRAM space not required for USB controller operation. When the controller is
+
+disabled, all 4 kB of DPRAM is available. Before accessing the DPRAM, you must take the USB controller out of reset.
+
+Since the USB controller is in the peripheral address space, it is not accessible for processor instruction fetch.
+
+Attempting to fetch instructions from USB DPRAM unconditionally returns a bus error response, no matter the
+
+configuration of the processor SAU/MPU/PMP or the system ACCESSCTRL registers.
+
+As peripheral addresses are marked Exempt in the IDAU (Section 10.2.2), the SAU configuration for this address range
+
+is ignored. Accesses to USB DPRAM are controlled only by the processor MPU/PMP and the ACCESSCTRL USBCTRL
+
+register.
