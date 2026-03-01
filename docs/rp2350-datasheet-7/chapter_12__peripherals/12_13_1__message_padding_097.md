@@ -1,0 +1,35 @@
+---
+source_pdf: rp2350-datasheet-7.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.13.1. Message padding
+pages: 1223-1223
+type: technical_spec
+generated_at: 2026-03-01T06:07:53.318745+00:00
+---
+
+# 12.13.1. Message padding
+
+12.13.1. Message padding
+
+Pad message content according to the standard SHA-256 method as described in the FIPS 180-4 Secure Hash
+
+Standard: append the message with single bit 1, then a number of 0 bits, then a 64-bit count of the number of message
+
+bits. So for a message M with length L bits the padded message should be:
+
+1. message M
+
+2. 1
+
+3. k zero bits, where k is the smallest non-negative solution to the equation: L + 1 + k = 448 mod 512
+
+4. a 64-bit block indicating L (the length of the message) in binary
+
+For example, the 8 bit ASCII message abc has a length of 24 bits. This is padded with 1, then 448-(24+1) = 423 0 bits, and
+
+then the message length as a 64-bit value as follows:
+
+01100001 01100010 01100011 1 00000000 000...0 00000000 000...0 00011000
+
+|---------message--------| 1 |--423 0 bits--| |------64 bit len-------|

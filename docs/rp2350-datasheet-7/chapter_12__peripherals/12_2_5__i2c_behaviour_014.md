@@ -1,0 +1,128 @@
+---
+source_pdf: rp2350-datasheet-7.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.2.5. I2C behaviour
+pages: 989-990
+type: technical_spec
+generated_at: 2026-03-01T06:07:53.318745+00:00
+---
+
+# 12.2.5. I2C behaviour
+
+12.2.5. I2C behaviour
+
+The DW_apb_i2c can be controlled with software to be one of the following:
+
+• An I2C master only, communicating with other I2C slaves
+• An I2C slave only, communicating with one or more I2C masters.
+
+The master is responsible for generating the clock and controlling the transfer of data. The slave is responsible for
+
+either transmitting or receiving data to and from the master. The acknowledgement of data is sent by the device that is
+
+receiving data, which can be either a master or a slave. As mentioned previously, the I2C protocol also allows multiple
+
+masters to reside on the I2C bus and uses an arbitration procedure to determine bus ownership.
+
+Each slave has a unique address determined by the system designer. When a master wants to communicate with a
+
+slave:
+
+1. The master transmits a START/RESTART condition that is then followed by the slave’s address and a control bit
+
+(R/W) to determine if the master wants to transmit data or receive data from the slave.
+
+2. The slave then sends an acknowledge (ACK) pulse after the address.
+
+When the master (master-transmitter) writes to the slave (slave-receiver), the receiver gets one byte of data. This
+
+transaction continues until the master terminates the transmission with a STOP condition.
+
+When the master reads from a slave (master-receiver), the slave transmits (slave-transmitter) a byte of data to the
+
+master. The master then acknowledges the transaction with the ACK pulse. This transaction continues until the master
+
+terminates the transmission by not acknowledging (NACK) the transaction after the last byte is received, and then the
+
+master issues a STOP condition or addresses another slave after issuing a RESTART condition. This behaviour is
+
+illustrated in Figure 69.
+
+![Page 989 figure](images/fig_p0989.png)
+
+Figure 69. Data
+
+transfer on the I2C
+
+Bus
+
+1
+2
+1
+2
+9
+3-8
+7
+8
+9
+
+SCL
+S
+or
+R
+
+The DW_apb_i2c is a synchronous serial interface. The SDA line is a bidirectional signal that changes only while the SCL line
+
+is low except for STOP, START, and RESTART conditions. The output drivers are open-drain or open-collector to perform
+
+wire-AND functions on the bus. The maximum number of devices on the bus is limited by only the maximum
+
+capacitance specification of 400 pF. Data is transmitted in byte packages.
+
+The I2C protocols implemented in DW_apb_i2c are described in more details in Section 12.2.6.
+
+12.2. I2C
+988
+
+RP2350 Datasheet
+
+12.2.5.1. START and STOP generation
+
+When operating as an I2C master, putting data into the TX FIFO causes the DW_apb_i2c to generate a START condition on
+
+the I2C bus. Writing a 1 to IC_DATA_CMD.STOP causes the DW_apb_i2c to generate a STOP condition on the I2C bus; a
+
+STOP condition is not issued if this bit is not set, even if the TX FIFO is empty.
+
+When operating as a slave, the DW_apb_i2c does not generate START and STOP conditions, as per the protocol. However,
+
+if a read request is made to the DW_apb_i2c, it holds the SCL line low until read data has been supplied to it. This stalls the
+
+I2C bus until read data is provided to the slave DW_apb_i2c, or the DW_apb_i2c slave is disabled by writing a 0 to
+
+IC_ENABLE.ENABLE.
+
+12.2.5.2. Combined formats
+
+The DW_apb_i2c supports mixed read and write combined format transactions in both 7-bit and 10-bit addressing modes.
+
+The DW_apb_i2c does not support mixed address and mixed address format - that is, a 7-bit address transaction followed
+
+by a 10-bit address transaction or vice versa-combined format transactions. To initiate combined format transfers,
+
+IC_CON.IC_RESTART_EN should be set to 1. With this value set and operating as a master, when the DW_apb_i2c
+
+completes an I2C transfer, it checks the TX FIFO and executes the next transfer. If the direction of this transfer differs
+
+from the previous transfer, the combined format is used to issue the transfer. If the TX FIFO is empty when the current
+
+I2C transfer completes:
+
+• IC_DATA_CMD.STOP is checked and:
+
+◦If set to 1, a STOP bit is issued.
+
+◦If set to 0, the SCL is held low until the next command is written to the TX FIFO.
+
+For more details, refer to Section 12.2.7.

@@ -1,0 +1,47 @@
+---
+source_pdf: rp2350-datasheet-7.pdf
+repository: llm_database
+chapter: Chapter 13. OTP
+section: 13.6.1. Bit repair by polarity (BRP)
+pages: 1278-1279
+type: technical_spec
+generated_at: 2026-03-01T06:07:53.318745+00:00
+---
+
+# 13.6.1. Bit repair by polarity (BRP)
+
+13.6.1. Bit repair by polarity (BRP)
+
+Bit repair by polarity (BRP) compensates for a single bit present at time of programming.
+
+When programming a row, hardware or software first calculates a 24-bit target value consisting of:
+
+• Two zeroes in bits 23:22
+• 6-bit Hamming ECC in bits 21:16
+• 16-bit data value in bits 15:0
+
+Before programming, an OTP row should contain all zeros. However, sometimes OTP rows contain a single bit that is
+
+already set to 1, either due to manufacturing flaws or previous programming. If a bit is already set (1) in an OTP row
+
+13.6. Error Correction Code (ECC)
+1277
+
+RP2350 Datasheet
+
+before programming, BRP checks the status of the corresponding bit in the target value. BRP compensates for this
+
+single set bit in one of two ways, depending on the corresponding value in the target value:
+
+• If the bit is clear (0), BRP inverts the target row and writes two ones in bits 23:22.
+• If the bit is set (1), BRP does not invert the target row, leaving two zeroes in bits 23:22.
+
+When you read an OTP value through an ECC alias (Section 13.1), BRP checks for two ones in bits 23:22. When both bits
+
+23 and 22 are set, BRP inverts the entire row before passing it to the modified Hamming code stage.
+
+BRP makes it possible to store any 22-bit value in a row that initially has at most one bit set, preserving the correction
+
+margin of the modified Hamming code. During manufacturing test, hardware scans the entire OTP array to ensure no
+
+rows contain more than one pre-set bit.
