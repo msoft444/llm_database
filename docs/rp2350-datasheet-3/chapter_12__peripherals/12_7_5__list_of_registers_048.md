@@ -1,0 +1,1267 @@
+---
+source_pdf: rp2350-datasheet-3.pdf
+repository: llm_database
+chapter: Chapter 12. Peripherals
+section: 12.7.5. List of registers
+pages: 1160-1182
+type: technical_spec
+generated_at: 2026-03-01T02:30:35.833805+00:00
+---
+
+# 12.7.5. List of registers
+
+![Page 1160 figure](images/fig_p1160.png)
+
+RP2350 Datasheet
+
+control register. Once the buffer control register has been written to, the device controller responds to the host with the
+
+data. Before this point, the device replies with a NAK:
+
+Pico Examples: https://github.com/raspberrypi/pico-examples/blob/master/usb/device/dev_lowlevel/dev_lowlevel.c Lines 238 - 260
+
+238 void usb_start_transfer(struct usb_endpoint_configuration *ep, uint8_t *buf, uint16_t len) {
+
+239     // We are asserting that the length is <= 64 bytes for simplicity of the example.
+
+240     // For multi packet transfers see the tinyusb port.
+
+241     assert(len <= 64);
+
+242 
+
+243     printf("Start transfer of len %d on ep addr 0x%x\n", len, ep->descriptor-
+
+    >bEndpointAddress);
+
+244 
+
+245     // Prepare buffer control register value
+
+246     uint32_t val = len | USB_BUF_CTRL_AVAIL;
+
+247 
+
+248     if (ep_is_tx(ep)) {
+
+249         // Need to copy the data from the user buffer to the usb memory
+
+250         memcpy((void *) ep->data_buffer, (void *) buf, len);
+
+251         // Mark as full
+
+252         val |= USB_BUF_CTRL_FULL;
+
+253     }
+
+254 
+
+255     // Set pid and flip for next transfer
+
+256     val |= ep->next_pid ? USB_BUF_CTRL_DATA1_PID : USB_BUF_CTRL_DATA0_PID;
+
+257     ep->next_pid ^= 1u;
+
+258 
+
+259     *ep->buffer_control = val;
+
+260 }
+
+12.7.5. List of registers
+
+The USB registers start at a base address of 0x50110000 (defined as USBCTRL_REGS_BASE in SDK).
+
+| Offset | Name | Info |
+| --- | --- | --- |
+| 0x000 | ADDR_ENDP | Device address and endpoint control |
+| 0x004 | ADDR_ENDP1 | Interrupt endpoint 1. Only valid for HOST mode. |
+| 0x008 | ADDR_ENDP2 | Interrupt endpoint 2. Only valid for HOST mode. |
+| 0x00c | ADDR_ENDP3 | Interrupt endpoint 3. Only valid for HOST mode. |
+| 0x010 | ADDR_ENDP4 | Interrupt endpoint 4. Only valid for HOST mode. |
+| 0x014 | ADDR_ENDP5 | Interrupt endpoint 5. Only valid for HOST mode. |
+| 0x018 | ADDR_ENDP6 | Interrupt endpoint 6. Only valid for HOST mode. |
+| 0x01c | ADDR_ENDP7 | Interrupt endpoint 7. Only valid for HOST mode. |
+| 0x020 | ADDR_ENDP8 | Interrupt endpoint 8. Only valid for HOST mode. |
+| 0x024 | ADDR_ENDP9 | Interrupt endpoint 9. Only valid for HOST mode. |
+| 0x028 | ADDR_ENDP10 | Interrupt endpoint 10. Only valid for HOST mode. |
+| 0x02c | ADDR_ENDP11 | Interrupt endpoint 11. Only valid for HOST mode. |
+| 0x030 | ADDR_ENDP12 | Interrupt endpoint 12. Only valid for HOST mode. |
+| 0x034 | ADDR_ENDP13 | Interrupt endpoint 13. Only valid for HOST mode. |
+
+Table 1195. List of
+
+12.7. USB
+1159
+
+![Page 1161 figure](images/fig_p1161.png)
+
+RP2350 Datasheet
+
+| Offset | Name | Info |
+| --- | --- | --- |
+| 0x038 | ADDR_ENDP14 | Interrupt endpoint 14. Only valid for HOST mode. |
+| 0x03c | ADDR_ENDP15 | Interrupt endpoint 15. Only valid for HOST mode. |
+| 0x040 | MAIN_CTRL | Main control register |
+| 0x044 | SOF_WR | Set the SOF (Start of Frame) frame number in the host controller. The SOF packet is sent every 1ms and the host will increment the frame number by 1 each time. |
+| 0x048 | SOF_RD | Read the last SOF (Start of Frame) frame number seen. In device mode the last SOF received from the host. In host mode the last SOF sent by the host. |
+| 0x04c | SIE_CTRL | SIE control register |
+| 0x050 | SIE_STATUS | SIE status register |
+| 0x054 | INT_EP_CTRL | interrupt endpoint control register |
+| 0x058 | BUFF_STATUS | Buffer status register. A bit set here indicates that a buffer has completed on the endpoint (if the buffer interrupt is enabled). It is possible for 2 buffers to be completed, so clearing the buffer status bit may instantly re set it on the next clock cycle. |
+| 0x05c | BUFF_CPU_SHOULD_HANDLE | Which of the double buffers should be handled. Only valid if using an interrupt per buffer (i.e. not per 2 buffers). Not valid for host interrupt endpoint polling because they are only single buffered. |
+| 0x060 | EP_ABORT | Device only: Can be set to ignore the buffer control register for this endpoint in case you would like to revoke a buffer. A NAK will be sent for every access to the endpoint until this bit is cleared. A corresponding bit in EP ABORT DONE is set when it is safe _ _ to modify the buffer control register. |
+| 0x064 | EP_ABORT_DONE | Device only: Used in conjunction with EP ABORT. Set once an _ endpoint is idle so the programmer knows it is safe to modify the buffer control register. |
+| 0x068 | EP_STALL_ARM | Device: this bit must be set in conjunction with the STALL bit in the buffer control register to send a STALL on EP0. The device controller clears these bits when a SETUP packet is received because the USB spec requires that a STALL condition is cleared when a SETUP packet is received. |
+| 0x06c | NAK_POLL | Used by the host controller. Sets the wait time in microseconds before trying again if the device replies with a NAK. |
+| 0x070 | EP_STATUS_STALL_NAK | Device: bits are set when the IRQ ON NAK or IRQ ON STALL bits are _ _ _ _ set. For EP0 this comes from SIE CTRL. For all other endpoints it _ comes from the endpoint control register. |
+| 0x074 | USB_MUXING | Where to connect the USB controller. Should be to_phy by default. |
+| 0x078 | USB_PWR | Overrides for the power signals in the event that the VBUS signals are not hooked up to GPIO. Set the value of the override and then the override enable to switch over to the override value. |
+
+12.7. USB
+1160
+
+![Page 1162 figure](images/fig_p1162.png)
+
+RP2350 Datasheet
+
+| Offset | Name | Info |
+| --- | --- | --- |
+| 0x07c | USBPHY_DIRECT | This register allows for direct control of the USB phy. Use in conjunction with usbphy_direct_override register to enable each override bit. |
+| 0x080 | USBPHY_DIRECT_OVERRIDE | Override enable for each control in usbphy_direct |
+| 0x084 | USBPHY_TRIM | Used to adjust trim values of USB phy pull down resistors. |
+| 0x088 | LINESTATE_TUNING | Used for debug only. |
+| 0x08c | INTR | Raw Interrupts |
+| 0x090 | INTE | Interrupt Enable |
+| 0x094 | INTF | Interrupt Force |
+| 0x098 | INTS | Interrupt status after masking & forcing |
+| 0x100 | SOF_TIMESTAMP_RAW | Device only. Raw value of free-running PHY clock counter @48MHz. Used to calculate time between SOF events. |
+| 0x104 | SOF_TIMESTAMP_LAST | Device only. Value of free-running PHY clock counter @48MHz when last SOF event occured. |
+| 0x108 | SM_STATE |  |
+| 0x10c | EP_TX_ERROR | TX error count for each endpoint. Write to each field to reset the counter to 0. |
+| 0x110 | EP_RX_ERROR | RX error count for each endpoint. Write to each field to reset the counter to 0. |
+| 0x114 | DEV_SM_WATCHDOG | Watchdog that forces the device state machine to idle and raises an interrupt if the device stays in a state that isn’t idle for the configured limit. The counter is reset on every state transition. Set limit while enable is low and then set the enable. |
+
+USB: ADDR_ENDP Register
+
+Offset: 0x000
+
+Description
+
+Device address and endpoint control
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:20 | Reserved. | - | - |
+| 19:16 | ENDPOINT: Device endpoint to send data to. Only valid for HOST mode. | RW | 0x0 |
+| 15:7 | Reserved. | - | - |
+| 6:0 | ADDRESS: In device mode, the address that the device should respond to. Set in response to a SET_ADDR setup packet from the host. In host mode set to the address of the device to communicate with. | RW | 0x00 |
+
+Table 1196.
+
+USB: 
+ADDR_ENDP1, 
+ADDR_ENDP2, 
+…, 
+ADDR_ENDP14, 
+ADDR_ENDP15
+Registers
+
+Offsets: 0x004, 0x008, …, 0x038, 0x03c
+
+Description
+
+Interrupt endpoint N. Only valid for HOST mode.
+
+12.7. USB
+1161
+
+![Page 1163 figure](images/fig_p1163.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:27 | Reserved. | - | - |
+| 26 | INTEP_PREAMBLE: Interrupt EP requires preamble (is a low speed device on a full speed hub) | RW | 0x0 |
+| 25 | INTEP_DIR: Direction of the interrupt endpoint. In=0, Out=1 | RW | 0x0 |
+| 24:20 | Reserved. | - | - |
+| 19:16 | ENDPOINT: Endpoint number of the interrupt endpoint | RW | 0x0 |
+| 15:7 | Reserved. | - | - |
+| 6:0 | ADDRESS: Device address | RW | 0x00 |
+
+Table 1197.
+
+ADDR_ENDP1,
+
+ADDR_ENDP2, …,
+
+ADDR_ENDP14,
+
+ADDR_ENDP15
+
+Registers
+
+USB: MAIN_CTRL Register
+
+Offset: 0x040
+
+Description
+
+Main control register
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | SIM_TIMING: Reduced timings for simulation | RW | 0x0 |
+| 30:3 | Reserved. | - | - |
+| 2 | PHY_ISO: Isolates USB phy after controller power-up Remove isolation once software has configured the controller Not isolated = 0, Isolated = 1 | RW | 0x1 |
+| 1 | HOST_NDEVICE: Device mode = 0, Host mode = 1 | RW | 0x0 |
+| 0 | CONTROLLER_EN: Enable controller | RW | 0x0 |
+
+Table 1198.
+
+USB: SOF_WR Register
+
+Offset: 0x044
+
+Description
+
+Set the SOF (Start of Frame) frame number in the host controller. The SOF packet is sent every 1ms and the host
+
+will increment the frame number by 1 each time.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:11 | Reserved. | - | - |
+| 10:0 | COUNT | WF | 0x000 |
+
+Table 1199. SOF_WR
+
+USB: SOF_RD Register
+
+Offset: 0x048
+
+Description
+
+Read the last SOF (Start of Frame) frame number seen. In device mode the last SOF received from the host. In host
+
+mode the last SOF sent by the host.
+
+12.7. USB
+1162
+
+![Page 1164 figure](images/fig_p1164.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:11 | Reserved. | - | - |
+| 10:0 | COUNT | RO | 0x000 |
+
+Table 1200. SOF_RD
+
+USB: SIE_CTRL Register
+
+Offset: 0x04c
+
+Description
+
+SIE control register
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP0_INT_STALL: Device: Set bit in EP_STATUS_STALL_NAK when EP0 sends a STALL | RW | 0x0 |
+| 30 | EP0_DOUBLE_BUF: Device: EP0 single buffered = 0, double buffered = 1 | RW | 0x0 |
+| 29 | EP0_INT_1BUF: Device: Set bit in BUFF_STATUS for every buffer completed on EP0 | RW | 0x0 |
+| 28 | EP0_INT_2BUF: Device: Set bit in BUFF_STATUS for every 2 buffers completed on EP0 | RW | 0x0 |
+| 27 | EP0_INT_NAK: Device: Set bit in EP_STATUS_STALL_NAK when EP0 sends a NAK | RW | 0x0 |
+| 26 | DIRECT_EN: Direct bus drive enable | RW | 0x0 |
+| 25 | DIRECT_DP: Direct control of DP | RW | 0x0 |
+| 24 | DIRECT_DM: Direct control of DM | RW | 0x0 |
+| 23:20 | Reserved. | - | - |
+| 19 | EP0_STOP_ON_SHORT_PACKET: Device: Stop EP0 on a short packet. | RW | 0x0 |
+| 18 | TRANSCEIVER_PD: Power down bus transceiver | RW | 0x0 |
+| 17 | RPU_OPT: Device: Pull-up strength (0=1K2, 1=2k3) | RW | 0x0 |
+| 16 | PULLUP_EN: Device: Enable pull up resistor | RW | 0x0 |
+| 15 | PULLDOWN_EN: Host: Enable pull down resistors | RW | 0x1 |
+| 14 | Reserved. | - | - |
+| 13 | RESET_BUS: Host: Reset bus | SC | 0x0 |
+| 12 | RESUME: Device: Remote wakeup. Device can initiate its own resume after suspend. | SC | 0x0 |
+| 11 | VBUS_EN: Host: Enable VBUS | RW | 0x0 |
+| 10 | KEEP_ALIVE_EN: Host: Enable keep alive packet (for low speed bus) | RW | 0x0 |
+| 9 | SOF_EN: Host: Enable SOF generation (for full speed bus) | RW | 0x0 |
+| 8 | SOF_SYNC: Host: Delay packet(s) until after SOF | RW | 0x0 |
+| 7 | Reserved. | - | - |
+| 6 | PREAMBLE_EN: Host: Preable enable for LS device on FS hub | RW | 0x0 |
+| 5 | Reserved. | - | - |
+| 4 | STOP_TRANS: Host: Stop transaction | SC | 0x0 |
+
+Table 1201. SIE_CTRL
+
+12.7. USB
+1163
+
+![Page 1165 figure](images/fig_p1165.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 3 | RECEIVE_DATA: Host: Receive transaction (IN to host) | RW | 0x0 |
+| 2 | SEND_DATA: Host: Send transaction (OUT from host) | RW | 0x0 |
+| 1 | SEND_SETUP: Host: Send Setup packet | RW | 0x0 |
+| 0 | START_TRANS: Host: Start transaction | SC | 0x0 |
+
+USB: SIE_STATUS Register
+
+Offset: 0x050
+
+Description
+
+SIE status register
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | DATA_SEQ_ERROR: Data Sequence Error. The device can raise a sequence error in the following conditions: * A SETUP packet is received followed by a DATA1 packet (data phase should always be DATA0) * An OUT packet is received from the host but doesn’t match the data pid in the buffer control register read from DPSRAM The host can raise a data sequence error in the following conditions: * An IN packet from the device has the wrong data PID | WC | 0x0 |
+| 30 | ACK_REC: ACK received. Raised by both host and device. | WC | 0x0 |
+| 29 | STALL_REC: Host: STALL received | WC | 0x0 |
+| 28 | NAK_REC: Host: NAK received | WC | 0x0 |
+| 27 | RX_TIMEOUT: RX timeout is raised by both the host and device if an ACK is not received in the maximum time specified by the USB spec. | WC | 0x0 |
+| 26 | RX_OVERFLOW: RX overflow is raised by the Serial RX engine if the incoming data is too fast. | WC | 0x0 |
+| 25 | BIT_STUFF_ERROR: Bit Stuff Error. Raised by the Serial RX engine. | WC | 0x0 |
+| 24 | CRC_ERROR: CRC Error. Raised by the Serial RX engine. | WC | 0x0 |
+| 23 | ENDPOINT_ERROR: An endpoint has encounted an error. Read the ep_rx_error and ep_tx_error registers to find out which endpoint had an error. | WC | 0x0 |
+| 22:20 | Reserved. | - | - |
+| 19 | BUS_RESET: Device: bus reset received | WC | 0x0 |
+
+Table 1202.
+
+12.7. USB
+1164
+
+![Page 1166 figure](images/fig_p1166.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 18 | TRANS_COMPLETE: Transaction complete. Raised by device if: * An IN or OUT packet is sent with the LAST BUFF bit set in the buffer control _ register Raised by host if: * A setup packet is sent when no data in or data out transaction follows * An IN packet is received and the LAST BUFF bit is set in the buffer control register * _ An IN packet is received with zero length * An OUT packet is sent and the LAST BUFF bit is set _ | WC | 0x0 |
+| 17 | SETUP_REC: Device: Setup packet received | WC | 0x0 |
+| 16 | CONNECTED: Device: connected | RO | 0x0 |
+| 15:13 | Reserved. | - | - |
+| 12 | RX_SHORT_PACKET: Device or Host has received a short packet. This is when the data recieved is less than configured in the buffer control register. Device: If using double buffered mode on device the buffer select will not be toggled after writing status back to the buffer control register. This is to prevent any further transactions on that endpoint until the user has reset the buffer control registers. Host: the current transfer will be stopped early. | WC | 0x0 |
+| 11 | RESUME: Host: Device has initiated a remote resume. Device: host has initiated a resume. | WC | 0x0 |
+| 10 | VBUS_OVER_CURR: VBUS over current detected | RO | 0x0 |
+| 9:8 | SPEED: Host: device speed. Disconnected = 00, LS = 01, FS = 10 | RO | 0x0 |
+| 7:5 | Reserved. | - | - |
+| 4 | SUSPENDED: Bus in suspended state. Valid for device and host. Host and device will go into suspend if neither Keep Alive / SOF frames are enabled. | RO | 0x0 |
+| 3:2 | LINE_STATE: USB bus line state | RO | 0x0 |
+| 1 | Reserved. | - | - |
+| 0 | VBUS_DETECTED: Device: VBUS Detected | RO | 0x0 |
+
+USB: INT_EP_CTRL Register
+
+Offset: 0x054
+
+Description
+
+interrupt endpoint control register
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:16 | Reserved. | - | - |
+| 15:1 | INT_EP_ACTIVE: Host: Enable interrupt endpoint 1 → 15 | RW | 0x0000 |
+| 0 | Reserved. | - | - |
+
+Table 1203.
+
+USB: BUFF_STATUS Register
+
+12.7. USB
+1165
+
+![Page 1167 figure](images/fig_p1167.png)
+
+RP2350 Datasheet
+
+Offset: 0x058
+
+Description
+
+Buffer status register. A bit set here indicates that a buffer has completed on the endpoint (if the buffer interrupt is
+
+enabled). It is possible for 2 buffers to be completed, so clearing the buffer status bit may instantly re set it on the
+
+next clock cycle.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_OUT | WC | 0x0 |
+| 30 | EP15_IN | WC | 0x0 |
+| 29 | EP14_OUT | WC | 0x0 |
+| 28 | EP14_IN | WC | 0x0 |
+| 27 | EP13_OUT | WC | 0x0 |
+| 26 | EP13_IN | WC | 0x0 |
+| 25 | EP12_OUT | WC | 0x0 |
+| 24 | EP12_IN | WC | 0x0 |
+| 23 | EP11_OUT | WC | 0x0 |
+| 22 | EP11_IN | WC | 0x0 |
+| 21 | EP10_OUT | WC | 0x0 |
+| 20 | EP10_IN | WC | 0x0 |
+| 19 | EP9_OUT | WC | 0x0 |
+| 18 | EP9_IN | WC | 0x0 |
+| 17 | EP8_OUT | WC | 0x0 |
+| 16 | EP8_IN | WC | 0x0 |
+| 15 | EP7_OUT | WC | 0x0 |
+| 14 | EP7_IN | WC | 0x0 |
+| 13 | EP6_OUT | WC | 0x0 |
+| 12 | EP6_IN | WC | 0x0 |
+| 11 | EP5_OUT | WC | 0x0 |
+| 10 | EP5_IN | WC | 0x0 |
+| 9 | EP4_OUT | WC | 0x0 |
+| 8 | EP4_IN | WC | 0x0 |
+| 7 | EP3_OUT | WC | 0x0 |
+| 6 | EP3_IN | WC | 0x0 |
+| 5 | EP2_OUT | WC | 0x0 |
+| 4 | EP2_IN | WC | 0x0 |
+| 3 | EP1_OUT | WC | 0x0 |
+| 2 | EP1_IN | WC | 0x0 |
+| 1 | EP0_OUT | WC | 0x0 |
+| 0 | EP0_IN | WC | 0x0 |
+
+Table 1204.
+
+BUFF_STATUS
+
+Register
+
+12.7. USB
+1166
+
+![Page 1168 figure](images/fig_p1168.png)
+
+RP2350 Datasheet
+
+USB: BUFF_CPU_SHOULD_HANDLE Register
+
+Offset: 0x05c
+
+Description
+
+Which of the double buffers should be handled. Only valid if using an interrupt per buffer (i.e. not per 2 buffers). Not
+
+valid for host interrupt endpoint polling because they are only single buffered.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_OUT | RO | 0x0 |
+| 30 | EP15_IN | RO | 0x0 |
+| 29 | EP14_OUT | RO | 0x0 |
+| 28 | EP14_IN | RO | 0x0 |
+| 27 | EP13_OUT | RO | 0x0 |
+| 26 | EP13_IN | RO | 0x0 |
+| 25 | EP12_OUT | RO | 0x0 |
+| 24 | EP12_IN | RO | 0x0 |
+| 23 | EP11_OUT | RO | 0x0 |
+| 22 | EP11_IN | RO | 0x0 |
+| 21 | EP10_OUT | RO | 0x0 |
+| 20 | EP10_IN | RO | 0x0 |
+| 19 | EP9_OUT | RO | 0x0 |
+| 18 | EP9_IN | RO | 0x0 |
+| 17 | EP8_OUT | RO | 0x0 |
+| 16 | EP8_IN | RO | 0x0 |
+| 15 | EP7_OUT | RO | 0x0 |
+| 14 | EP7_IN | RO | 0x0 |
+| 13 | EP6_OUT | RO | 0x0 |
+| 12 | EP6_IN | RO | 0x0 |
+| 11 | EP5_OUT | RO | 0x0 |
+| 10 | EP5_IN | RO | 0x0 |
+| 9 | EP4_OUT | RO | 0x0 |
+| 8 | EP4_IN | RO | 0x0 |
+| 7 | EP3_OUT | RO | 0x0 |
+| 6 | EP3_IN | RO | 0x0 |
+| 5 | EP2_OUT | RO | 0x0 |
+| 4 | EP2_IN | RO | 0x0 |
+| 3 | EP1_OUT | RO | 0x0 |
+| 2 | EP1_IN | RO | 0x0 |
+| 1 | EP0_OUT | RO | 0x0 |
+
+Table 1205.
+
+BUFF_CPU_SHOULD_H
+
+ANDLE Register
+
+12.7. USB
+1167
+
+![Page 1169 figure](images/fig_p1169.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 0 | EP0_IN | RO | 0x0 |
+
+USB: EP_ABORT Register
+
+Offset: 0x060
+
+Description
+
+Device only: Can be set to ignore the buffer control register for this endpoint in case you would like to revoke a
+
+buffer. A NAK will be sent for every access to the endpoint until this bit is cleared. A corresponding bit in
+
+EP_ABORT_DONE is set when it is safe to modify the buffer control register.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_OUT | RW | 0x0 |
+| 30 | EP15_IN | RW | 0x0 |
+| 29 | EP14_OUT | RW | 0x0 |
+| 28 | EP14_IN | RW | 0x0 |
+| 27 | EP13_OUT | RW | 0x0 |
+| 26 | EP13_IN | RW | 0x0 |
+| 25 | EP12_OUT | RW | 0x0 |
+| 24 | EP12_IN | RW | 0x0 |
+| 23 | EP11_OUT | RW | 0x0 |
+| 22 | EP11_IN | RW | 0x0 |
+| 21 | EP10_OUT | RW | 0x0 |
+| 20 | EP10_IN | RW | 0x0 |
+| 19 | EP9_OUT | RW | 0x0 |
+| 18 | EP9_IN | RW | 0x0 |
+| 17 | EP8_OUT | RW | 0x0 |
+| 16 | EP8_IN | RW | 0x0 |
+| 15 | EP7_OUT | RW | 0x0 |
+| 14 | EP7_IN | RW | 0x0 |
+| 13 | EP6_OUT | RW | 0x0 |
+| 12 | EP6_IN | RW | 0x0 |
+| 11 | EP5_OUT | RW | 0x0 |
+| 10 | EP5_IN | RW | 0x0 |
+| 9 | EP4_OUT | RW | 0x0 |
+| 8 | EP4_IN | RW | 0x0 |
+| 7 | EP3_OUT | RW | 0x0 |
+| 6 | EP3_IN | RW | 0x0 |
+| 5 | EP2_OUT | RW | 0x0 |
+| 4 | EP2_IN | RW | 0x0 |
+
+Table 1206.
+
+12.7. USB
+1168
+
+![Page 1170 figure](images/fig_p1170.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 3 | EP1_OUT | RW | 0x0 |
+| 2 | EP1_IN | RW | 0x0 |
+| 1 | EP0_OUT | RW | 0x0 |
+| 0 | EP0_IN | RW | 0x0 |
+
+USB: EP_ABORT_DONE Register
+
+Offset: 0x064
+
+Description
+
+Device only: Used in conjunction with EP_ABORT. Set once an endpoint is idle so the programmer knows it is safe to
+
+modify the buffer control register.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_OUT | WC | 0x0 |
+| 30 | EP15_IN | WC | 0x0 |
+| 29 | EP14_OUT | WC | 0x0 |
+| 28 | EP14_IN | WC | 0x0 |
+| 27 | EP13_OUT | WC | 0x0 |
+| 26 | EP13_IN | WC | 0x0 |
+| 25 | EP12_OUT | WC | 0x0 |
+| 24 | EP12_IN | WC | 0x0 |
+| 23 | EP11_OUT | WC | 0x0 |
+| 22 | EP11_IN | WC | 0x0 |
+| 21 | EP10_OUT | WC | 0x0 |
+| 20 | EP10_IN | WC | 0x0 |
+| 19 | EP9_OUT | WC | 0x0 |
+| 18 | EP9_IN | WC | 0x0 |
+| 17 | EP8_OUT | WC | 0x0 |
+| 16 | EP8_IN | WC | 0x0 |
+| 15 | EP7_OUT | WC | 0x0 |
+| 14 | EP7_IN | WC | 0x0 |
+| 13 | EP6_OUT | WC | 0x0 |
+| 12 | EP6_IN | WC | 0x0 |
+| 11 | EP5_OUT | WC | 0x0 |
+| 10 | EP5_IN | WC | 0x0 |
+| 9 | EP4_OUT | WC | 0x0 |
+| 8 | EP4_IN | WC | 0x0 |
+| 7 | EP3_OUT | WC | 0x0 |
+| 6 | EP3_IN | WC | 0x0 |
+
+Table 1207.
+
+EP_ABORT_DONE
+
+Register
+
+12.7. USB
+1169
+
+![Page 1171 figure](images/fig_p1171.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 5 | EP2_OUT | WC | 0x0 |
+| 4 | EP2_IN | WC | 0x0 |
+| 3 | EP1_OUT | WC | 0x0 |
+| 2 | EP1_IN | WC | 0x0 |
+| 1 | EP0_OUT | WC | 0x0 |
+| 0 | EP0_IN | WC | 0x0 |
+
+USB: EP_STALL_ARM Register
+
+Offset: 0x068
+
+Description
+
+Device: this bit must be set in conjunction with the STALL bit in the buffer control register to send a STALL on EP0.
+
+The device controller clears these bits when a SETUP packet is received because the USB spec requires that a
+
+STALL condition is cleared when a SETUP packet is received.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:2 | Reserved. | - | - |
+| 1 | EP0_OUT | RW | 0x0 |
+| 0 | EP0_IN | RW | 0x0 |
+
+Table 1208.
+
+EP_STALL_ARM
+
+Register
+
+USB: NAK_POLL Register
+
+Offset: 0x06c
+
+Description
+
+Used by the host controller. Sets the wait time in microseconds before trying again if the device replies with a NAK.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:28 | RETRY_COUNT_HI: Bits 9:6 of nak_retry count | RO | 0x0 |
+| 27 | EPX_STOPPED_ON_NAK: EPX polling has stopped because a nak was received | WC | 0x0 |
+| 26 | STOP_EPX_ON_NAK: Stop polling epx when a nak is received | RW | 0x0 |
+| 25:16 | DELAY_FS: NAK polling interval for a full speed device | RW | 0x010 |
+| 15:10 | RETRY_COUNT_LO: Bits 5:0 of nak_retry_count | RO | 0x00 |
+| 9:0 | DELAY_LS: NAK polling interval for a low speed device | RW | 0x010 |
+
+Table 1209.
+
+USB: EP_STATUS_STALL_NAK Register
+
+Offset: 0x070
+
+Description
+
+Device: bits are set when the IRQ_ON_NAK or IRQ_ON_STALL bits are set. For EP0 this comes from SIE_CTRL. For all other
+
+endpoints it comes from the endpoint control register.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_OUT | WC | 0x0 |
+| 30 | EP15_IN | WC | 0x0 |
+
+Table 1210.
+
+EP_STATUS_STALL_N
+
+AK Register
+
+12.7. USB
+1170
+
+![Page 1172 figure](images/fig_p1172.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 29 | EP14_OUT | WC | 0x0 |
+| 28 | EP14_IN | WC | 0x0 |
+| 27 | EP13_OUT | WC | 0x0 |
+| 26 | EP13_IN | WC | 0x0 |
+| 25 | EP12_OUT | WC | 0x0 |
+| 24 | EP12_IN | WC | 0x0 |
+| 23 | EP11_OUT | WC | 0x0 |
+| 22 | EP11_IN | WC | 0x0 |
+| 21 | EP10_OUT | WC | 0x0 |
+| 20 | EP10_IN | WC | 0x0 |
+| 19 | EP9_OUT | WC | 0x0 |
+| 18 | EP9_IN | WC | 0x0 |
+| 17 | EP8_OUT | WC | 0x0 |
+| 16 | EP8_IN | WC | 0x0 |
+| 15 | EP7_OUT | WC | 0x0 |
+| 14 | EP7_IN | WC | 0x0 |
+| 13 | EP6_OUT | WC | 0x0 |
+| 12 | EP6_IN | WC | 0x0 |
+| 11 | EP5_OUT | WC | 0x0 |
+| 10 | EP5_IN | WC | 0x0 |
+| 9 | EP4_OUT | WC | 0x0 |
+| 8 | EP4_IN | WC | 0x0 |
+| 7 | EP3_OUT | WC | 0x0 |
+| 6 | EP3_IN | WC | 0x0 |
+| 5 | EP2_OUT | WC | 0x0 |
+| 4 | EP2_IN | WC | 0x0 |
+| 3 | EP1_OUT | WC | 0x0 |
+| 2 | EP1_IN | WC | 0x0 |
+| 1 | EP0_OUT | WC | 0x0 |
+| 0 | EP0_IN | WC | 0x0 |
+
+USB: USB_MUXING Register
+
+Offset: 0x074
+
+Description
+
+Where to connect the USB controller. Should be to_phy by default.
+
+12.7. USB
+1171
+
+![Page 1173 figure](images/fig_p1173.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | SWAP_DPDM: Swap the USB PHY DP and DM pins and all related controls and flip receive differential data. Can be used to switch USB DP/DP on the PCB. This is done at a low level so overrides all other controls. | RW | 0x0 |
+| 30:5 | Reserved. | - | - |
+| 4 | USBPHY_AS_GPIO: Use the usb DP and DM pins as GPIO pins instead of connecting them to the USB controller. | RW | 0x0 |
+| 3 | SOFTCON | RW | 0x0 |
+| 2 | TO_DIGITAL_PAD | RW | 0x0 |
+| 1 | TO_EXTPHY | RW | 0x0 |
+| 0 | TO_PHY | RW | 0x1 |
+
+Table 1211.
+
+USB: USB_PWR Register
+
+Offset: 0x078
+
+Description
+
+Overrides for the power signals in the event that the VBUS signals are not hooked up to GPIO. Set the value of the
+
+override and then the override enable to switch over to the override value.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:6 | Reserved. | - | - |
+| 5 | OVERCURR_DETECT_EN | RW | 0x0 |
+| 4 | OVERCURR_DETECT | RW | 0x0 |
+| 3 | VBUS_DETECT_OVERRIDE_EN | RW | 0x0 |
+| 2 | VBUS_DETECT | RW | 0x0 |
+| 1 | VBUS_EN_OVERRIDE_EN | RW | 0x0 |
+| 0 | VBUS_EN | RW | 0x0 |
+
+Table 1212. USB_PWR
+
+USB: USBPHY_DIRECT Register
+
+Offset: 0x07c
+
+Description
+
+This register allows for direct control of the USB phy. Use in conjunction with usbphy_direct_override register to
+
+enable each override bit.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:26 | Reserved. | - | - |
+| 25 | RX_DM_OVERRIDE: Override rx_dm value into controller | RW | 0x0 |
+| 24 | RX_DP_OVERRIDE: Override rx_dp value into controller | RW | 0x0 |
+| 23 | RX_DD_OVERRIDE: Override rx_dd value into controller | RW | 0x0 |
+| 22 | DM_OVV: DM over voltage | RO | 0x0 |
+| 21 | DP_OVV: DP over voltage | RO | 0x0 |
+| 20 | DM_OVCN: DM overcurrent | RO | 0x0 |
+
+Table 1213.
+
+USBPHY_DIRECT
+
+Register
+
+12.7. USB
+1172
+
+![Page 1174 figure](images/fig_p1174.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 19 | DP_OVCN: DP overcurrent | RO | 0x0 |
+| 18 | RX_DM: DPM pin state | RO | 0x0 |
+| 17 | RX_DP: DPP pin state | RO | 0x0 |
+| 16 | RX_DD: Differential RX | RO | 0x0 |
+| 15 | TX_DIFFMODE: TX_DIFFMODE=0: Single ended mode TX_DIFFMODE=1: Differential drive mode (TX_DM, TX_DM_OE ignored) | RW | 0x0 |
+| 14 | TX_FSSLEW: TX_FSSLEW=0: Low speed slew rate TX_FSSLEW=1: Full speed slew rate | RW | 0x0 |
+| 13 | TX_PD: TX power down override (if override enable is set). 1 = powered down. | RW | 0x0 |
+| 12 | RX_PD: RX power down override (if override enable is set). 1 = powered down. | RW | 0x0 |
+| 11 | TX_DM: Output data. TX_DIFFMODE=1, Ignored TX_DIFFMODE=0, Drives DPM only. TX_DM_OE=1 to enable drive. DPM=TX_DM | RW | 0x0 |
+| 10 | TX_DP: Output data. If TX_DIFFMODE=1, Drives DPP/DPM diff pair. TX_DP_OE=1 to enable drive. DPP=TX_DP, DPM=~TX_DP If TX_DIFFMODE=0, Drives DPP only. TX_DP_OE=1 to enable drive. DPP=TX_DP | RW | 0x0 |
+| 9 | TX_DM_OE: Output enable. If TX_DIFFMODE=1, Ignored. If TX_DIFFMODE=0, OE for DPM only. 0 - DPM in Hi-Z state; 1 - DPM driving | RW | 0x0 |
+| 8 | TX_DP_OE: Output enable. If TX_DIFFMODE=1, OE for DPP/DPM diff pair. 0 - DPP/DPM in Hi-Z state; 1 - DPP/DPM driving If TX_DIFFMODE=0, OE for DPP only. 0 - DPP in Hi-Z state; 1 - DPP driving | RW | 0x0 |
+| 7 | Reserved. | - | - |
+| 6 | DM_PULLDN_EN: DM pull down enable | RW | 0x0 |
+| 5 | DM_PULLUP_EN: DM pull up enable | RW | 0x0 |
+| 4 | DM_PULLUP_HISEL: Enable the second DM pull up resistor. 0 - Pull = Rpu2; 1 - Pull = Rpu1 + Rpu2 | RW | 0x0 |
+| 3 | Reserved. | - | - |
+| 2 | DP_PULLDN_EN: DP pull down enable | RW | 0x0 |
+| 1 | DP_PULLUP_EN: DP pull up enable | RW | 0x0 |
+| 0 | DP_PULLUP_HISEL: Enable the second DP pull up resistor. 0 - Pull = Rpu2; 1 - Pull = Rpu1 + Rpu2 | RW | 0x0 |
+
+USB: USBPHY_DIRECT_OVERRIDE Register
+
+Offset: 0x080
+
+Description
+
+Override enable for each control in usbphy_direct
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:19 | Reserved. | - | - |
+| 18 | RX_DM_OVERRIDE_EN | RW | 0x0 |
+
+Table 1214.
+
+USBPHY_DIRECT_OVE
+
+RRIDE Register
+
+12.7. USB
+1173
+
+![Page 1175 figure](images/fig_p1175.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 17 | RX_DP_OVERRIDE_EN | RW | 0x0 |
+| 16 | RX_DD_OVERRIDE_EN | RW | 0x0 |
+| 15 | TX_DIFFMODE_OVERRIDE_EN | RW | 0x0 |
+| 14:13 | Reserved. | - | - |
+| 12 | DM_PULLUP_OVERRIDE_EN | RW | 0x0 |
+| 11 | TX_FSSLEW_OVERRIDE_EN | RW | 0x0 |
+| 10 | TX_PD_OVERRIDE_EN | RW | 0x0 |
+| 9 | RX_PD_OVERRIDE_EN | RW | 0x0 |
+| 8 | TX_DM_OVERRIDE_EN | RW | 0x0 |
+| 7 | TX_DP_OVERRIDE_EN | RW | 0x0 |
+| 6 | TX_DM_OE_OVERRIDE_EN | RW | 0x0 |
+| 5 | TX_DP_OE_OVERRIDE_EN | RW | 0x0 |
+| 4 | DM_PULLDN_EN_OVERRIDE_EN | RW | 0x0 |
+| 3 | DP_PULLDN_EN_OVERRIDE_EN | RW | 0x0 |
+| 2 | DP_PULLUP_EN_OVERRIDE_EN | RW | 0x0 |
+| 1 | DM_PULLUP_HISEL_OVERRIDE_EN | RW | 0x0 |
+| 0 | DP_PULLUP_HISEL_OVERRIDE_EN | RW | 0x0 |
+
+USB: USBPHY_TRIM Register
+
+Offset: 0x084
+
+Description
+
+Used to adjust trim values of USB phy pull down resistors.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:13 | Reserved. | - | - |
+| 12:8 | DM_PULLDN_TRIM: Value to drive to USB PHY DM pulldown resistor trim control Experimental data suggests that the reset value will work, but this register allows adjustment if required | RW | 0x1f |
+| 7:5 | Reserved. | - | - |
+| 4:0 | DP_PULLDN_TRIM: Value to drive to USB PHY DP pulldown resistor trim control Experimental data suggests that the reset value will work, but this register allows adjustment if required | RW | 0x1f |
+
+Table 1215.
+
+USBPHY_TRIM
+
+Register
+
+USB: LINESTATE_TUNING Register
+
+Offset: 0x088
+
+Description
+
+Used for debug only.
+
+12.7. USB
+1174
+
+![Page 1176 figure](images/fig_p1176.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:12 | Reserved. | - | - |
+| 11:8 | SPARE_FIX | RW | 0x0 |
+| 7 | DEV_LS_WAKE_FIX: Device - exit suspend on any non-idle signalling, not qualified with a 1ms timer | RW | 0x1 |
+| 6 | DEV_RX_ERR_QUIESCE: Device - suppress repeated errors until the device FSM is next in the process of decoding an inbound packet. | RW | 0x1 |
+| 5 | SIE_RX_CHATTER_SE0_FIX: RX - when recovering from line chatter or bitstuff errors, treat SE0 as the end of chatter as well as 8 consecutive idle bits. | RW | 0x1 |
+| 4 | SIE_RX_BITSTUFF_FIX: RX - when a bitstuff error is signalled by rx_dasm, unconditionally terminate RX decode to avoid a hang during certain packet phases. | RW | 0x1 |
+| 3 | DEV_BUFF_CONTROL_DOUBLE_READ_FIX: Device - the controller FSM performs two reads of the buffer status memory address to avoid sampling metastable data. An enabled buffer is only used if both reads match. | RW | 0x1 |
+| 2 | MULTI_HUB_FIX: Host - increase inter-packet and turnaround timeouts to accommodate worst-case hub delays. | RW | 0x0 |
+| 1 | LINESTATE_DELAY: Device/Host - add an extra 1-bit debounce of linestate sampling. | RW | 0x0 |
+| 0 | RCV_DELAY: Device - register the received data to account for hub bit dribble before EOP. Only affects certain hubs. | RW | 0x0 |
+
+Table 1216.
+
+LINESTATE_TUNING
+
+Register
+
+USB: INTR Register
+
+Offset: 0x08c
+
+Description
+
+Raw Interrupts
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:24 | Reserved. | - | - |
+| 23 | EPX_STOPPED_ON_NAK: Source: NAK_POLL.EPX_STOPPED_ON_NAK | RO | 0x0 |
+| 22 | DEV_SM_WATCHDOG_FIRED: Source: DEV_SM_WATCHDOG.FIRED | RO | 0x0 |
+| 21 | ENDPOINT_ERROR: Source: SIE_STATUS.ENDPOINT_ERROR | RO | 0x0 |
+| 20 | RX_SHORT_PACKET: Source: SIE_STATUS.RX_SHORT_PACKET | RO | 0x0 |
+| 19 | EP_STALL_NAK: Raised when any bit in EP_STATUS_STALL_NAK is set. Clear by clearing all bits in EP_STATUS_STALL_NAK. | RO | 0x0 |
+| 18 | ABORT_DONE: Raised when any bit in ABORT_DONE is set. Clear by clearing all bits in ABORT_DONE. | RO | 0x0 |
+| 17 | DEV_SOF: Set every time the device receives a SOF (Start of Frame) packet. Cleared by reading SOF_RD | RO | 0x0 |
+| 16 | SETUP_REQ: Device. Source: SIE_STATUS.SETUP_REC | RO | 0x0 |
+| 15 | DEV_RESUME_FROM_HOST: Set when the device receives a resume from the host. Cleared by writing to SIE_STATUS.RESUME | RO | 0x0 |
+
+Table 1217. INTR
+
+12.7. USB
+1175
+
+![Page 1177 figure](images/fig_p1177.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 14 | DEV_SUSPEND: Set when the device suspend state changes. Cleared by writing to SIE_STATUS.SUSPENDED | RO | 0x0 |
+| 13 | DEV_CONN_DIS: Set when the device connection state changes. Cleared by writing to SIE_STATUS.CONNECTED | RO | 0x0 |
+| 12 | BUS_RESET: Source: SIE_STATUS.BUS_RESET | RO | 0x0 |
+| 11 | VBUS_DETECT: Source: SIE_STATUS.VBUS_DETECTED | RO | 0x0 |
+| 10 | STALL: Source: SIE_STATUS.STALL_REC | RO | 0x0 |
+| 9 | ERROR_CRC: Source: SIE_STATUS.CRC_ERROR | RO | 0x0 |
+| 8 | ERROR_BIT_STUFF: Source: SIE_STATUS.BIT_STUFF_ERROR | RO | 0x0 |
+| 7 | ERROR_RX_OVERFLOW: Source: SIE_STATUS.RX_OVERFLOW | RO | 0x0 |
+| 6 | ERROR_RX_TIMEOUT: Source: SIE_STATUS.RX_TIMEOUT | RO | 0x0 |
+| 5 | ERROR_DATA_SEQ: Source: SIE_STATUS.DATA_SEQ_ERROR | RO | 0x0 |
+| 4 | BUFF_STATUS: Raised when any bit in BUFF_STATUS is set. Clear by clearing all bits in BUFF_STATUS. | RO | 0x0 |
+| 3 | TRANS_COMPLETE: Raised every time SIE_STATUS.TRANS_COMPLETE is set. Clear by writing to this bit. | RO | 0x0 |
+| 2 | HOST_SOF: Host: raised every time the host sends a SOF (Start of Frame). Cleared by reading SOF_RD | RO | 0x0 |
+| 1 | HOST_RESUME: Host: raised when a device wakes up the host. Cleared by writing to SIE_STATUS.RESUME | RO | 0x0 |
+| 0 | HOST_CONN_DIS: Host: raised when a device is connected or disconnected (i.e. when SIE_STATUS.SPEED changes). Cleared by writing to SIE_STATUS.SPEED | RO | 0x0 |
+
+USB: INTE Register
+
+Offset: 0x090
+
+Description
+
+Interrupt Enable
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:24 | Reserved. | - | - |
+| 23 | EPX_STOPPED_ON_NAK: Source: NAK_POLL.EPX_STOPPED_ON_NAK | RW | 0x0 |
+| 22 | DEV_SM_WATCHDOG_FIRED: Source: DEV_SM_WATCHDOG.FIRED | RW | 0x0 |
+| 21 | ENDPOINT_ERROR: Source: SIE_STATUS.ENDPOINT_ERROR | RW | 0x0 |
+| 20 | RX_SHORT_PACKET: Source: SIE_STATUS.RX_SHORT_PACKET | RW | 0x0 |
+| 19 | EP_STALL_NAK: Raised when any bit in EP_STATUS_STALL_NAK is set. Clear by clearing all bits in EP_STATUS_STALL_NAK. | RW | 0x0 |
+| 18 | ABORT_DONE: Raised when any bit in ABORT_DONE is set. Clear by clearing all bits in ABORT_DONE. | RW | 0x0 |
+| 17 | DEV_SOF: Set every time the device receives a SOF (Start of Frame) packet. Cleared by reading SOF_RD | RW | 0x0 |
+
+Table 1218. INTE
+
+12.7. USB
+1176
+
+![Page 1178 figure](images/fig_p1178.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 16 | SETUP_REQ: Device. Source: SIE_STATUS.SETUP_REC | RW | 0x0 |
+| 15 | DEV_RESUME_FROM_HOST: Set when the device receives a resume from the host. Cleared by writing to SIE_STATUS.RESUME | RW | 0x0 |
+| 14 | DEV_SUSPEND: Set when the device suspend state changes. Cleared by writing to SIE_STATUS.SUSPENDED | RW | 0x0 |
+| 13 | DEV_CONN_DIS: Set when the device connection state changes. Cleared by writing to SIE_STATUS.CONNECTED | RW | 0x0 |
+| 12 | BUS_RESET: Source: SIE_STATUS.BUS_RESET | RW | 0x0 |
+| 11 | VBUS_DETECT: Source: SIE_STATUS.VBUS_DETECTED | RW | 0x0 |
+| 10 | STALL: Source: SIE_STATUS.STALL_REC | RW | 0x0 |
+| 9 | ERROR_CRC: Source: SIE_STATUS.CRC_ERROR | RW | 0x0 |
+| 8 | ERROR_BIT_STUFF: Source: SIE_STATUS.BIT_STUFF_ERROR | RW | 0x0 |
+| 7 | ERROR_RX_OVERFLOW: Source: SIE_STATUS.RX_OVERFLOW | RW | 0x0 |
+| 6 | ERROR_RX_TIMEOUT: Source: SIE_STATUS.RX_TIMEOUT | RW | 0x0 |
+| 5 | ERROR_DATA_SEQ: Source: SIE_STATUS.DATA_SEQ_ERROR | RW | 0x0 |
+| 4 | BUFF_STATUS: Raised when any bit in BUFF_STATUS is set. Clear by clearing all bits in BUFF_STATUS. | RW | 0x0 |
+| 3 | TRANS_COMPLETE: Raised every time SIE_STATUS.TRANS_COMPLETE is set. Clear by writing to this bit. | RW | 0x0 |
+| 2 | HOST_SOF: Host: raised every time the host sends a SOF (Start of Frame). Cleared by reading SOF_RD | RW | 0x0 |
+| 1 | HOST_RESUME: Host: raised when a device wakes up the host. Cleared by writing to SIE_STATUS.RESUME | RW | 0x0 |
+| 0 | HOST_CONN_DIS: Host: raised when a device is connected or disconnected (i.e. when SIE_STATUS.SPEED changes). Cleared by writing to SIE_STATUS.SPEED | RW | 0x0 |
+
+USB: INTF Register
+
+Offset: 0x094
+
+Description
+
+Interrupt Force
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:24 | Reserved. | - | - |
+| 23 | EPX_STOPPED_ON_NAK: Source: NAK_POLL.EPX_STOPPED_ON_NAK | RW | 0x0 |
+| 22 | DEV_SM_WATCHDOG_FIRED: Source: DEV_SM_WATCHDOG.FIRED | RW | 0x0 |
+| 21 | ENDPOINT_ERROR: Source: SIE_STATUS.ENDPOINT_ERROR | RW | 0x0 |
+| 20 | RX_SHORT_PACKET: Source: SIE_STATUS.RX_SHORT_PACKET | RW | 0x0 |
+| 19 | EP_STALL_NAK: Raised when any bit in EP_STATUS_STALL_NAK is set. Clear by clearing all bits in EP_STATUS_STALL_NAK. | RW | 0x0 |
+
+Table 1219. INTF
+
+12.7. USB
+1177
+
+![Page 1179 figure](images/fig_p1179.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 18 | ABORT_DONE: Raised when any bit in ABORT_DONE is set. Clear by clearing all bits in ABORT_DONE. | RW | 0x0 |
+| 17 | DEV_SOF: Set every time the device receives a SOF (Start of Frame) packet. Cleared by reading SOF_RD | RW | 0x0 |
+| 16 | SETUP_REQ: Device. Source: SIE_STATUS.SETUP_REC | RW | 0x0 |
+| 15 | DEV_RESUME_FROM_HOST: Set when the device receives a resume from the host. Cleared by writing to SIE_STATUS.RESUME | RW | 0x0 |
+| 14 | DEV_SUSPEND: Set when the device suspend state changes. Cleared by writing to SIE_STATUS.SUSPENDED | RW | 0x0 |
+| 13 | DEV_CONN_DIS: Set when the device connection state changes. Cleared by writing to SIE_STATUS.CONNECTED | RW | 0x0 |
+| 12 | BUS_RESET: Source: SIE_STATUS.BUS_RESET | RW | 0x0 |
+| 11 | VBUS_DETECT: Source: SIE_STATUS.VBUS_DETECTED | RW | 0x0 |
+| 10 | STALL: Source: SIE_STATUS.STALL_REC | RW | 0x0 |
+| 9 | ERROR_CRC: Source: SIE_STATUS.CRC_ERROR | RW | 0x0 |
+| 8 | ERROR_BIT_STUFF: Source: SIE_STATUS.BIT_STUFF_ERROR | RW | 0x0 |
+| 7 | ERROR_RX_OVERFLOW: Source: SIE_STATUS.RX_OVERFLOW | RW | 0x0 |
+| 6 | ERROR_RX_TIMEOUT: Source: SIE_STATUS.RX_TIMEOUT | RW | 0x0 |
+| 5 | ERROR_DATA_SEQ: Source: SIE_STATUS.DATA_SEQ_ERROR | RW | 0x0 |
+| 4 | BUFF_STATUS: Raised when any bit in BUFF_STATUS is set. Clear by clearing all bits in BUFF_STATUS. | RW | 0x0 |
+| 3 | TRANS_COMPLETE: Raised every time SIE_STATUS.TRANS_COMPLETE is set. Clear by writing to this bit. | RW | 0x0 |
+| 2 | HOST_SOF: Host: raised every time the host sends a SOF (Start of Frame). Cleared by reading SOF_RD | RW | 0x0 |
+| 1 | HOST_RESUME: Host: raised when a device wakes up the host. Cleared by writing to SIE_STATUS.RESUME | RW | 0x0 |
+| 0 | HOST_CONN_DIS: Host: raised when a device is connected or disconnected (i.e. when SIE_STATUS.SPEED changes). Cleared by writing to SIE_STATUS.SPEED | RW | 0x0 |
+
+USB: INTS Register
+
+Offset: 0x098
+
+Description
+
+Interrupt status after masking & forcing
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:24 | Reserved. | - | - |
+| 23 | EPX_STOPPED_ON_NAK: Source: NAK_POLL.EPX_STOPPED_ON_NAK | RO | 0x0 |
+| 22 | DEV_SM_WATCHDOG_FIRED: Source: DEV_SM_WATCHDOG.FIRED | RO | 0x0 |
+| 21 | ENDPOINT_ERROR: Source: SIE_STATUS.ENDPOINT_ERROR | RO | 0x0 |
+
+Table 1220. INTS
+
+12.7. USB
+1178
+
+![Page 1180 figure](images/fig_p1180.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 20 | RX_SHORT_PACKET: Source: SIE_STATUS.RX_SHORT_PACKET | RO | 0x0 |
+| 19 | EP_STALL_NAK: Raised when any bit in EP_STATUS_STALL_NAK is set. Clear by clearing all bits in EP_STATUS_STALL_NAK. | RO | 0x0 |
+| 18 | ABORT_DONE: Raised when any bit in ABORT_DONE is set. Clear by clearing all bits in ABORT_DONE. | RO | 0x0 |
+| 17 | DEV_SOF: Set every time the device receives a SOF (Start of Frame) packet. Cleared by reading SOF_RD | RO | 0x0 |
+| 16 | SETUP_REQ: Device. Source: SIE_STATUS.SETUP_REC | RO | 0x0 |
+| 15 | DEV_RESUME_FROM_HOST: Set when the device receives a resume from the host. Cleared by writing to SIE_STATUS.RESUME | RO | 0x0 |
+| 14 | DEV_SUSPEND: Set when the device suspend state changes. Cleared by writing to SIE_STATUS.SUSPENDED | RO | 0x0 |
+| 13 | DEV_CONN_DIS: Set when the device connection state changes. Cleared by writing to SIE_STATUS.CONNECTED | RO | 0x0 |
+| 12 | BUS_RESET: Source: SIE_STATUS.BUS_RESET | RO | 0x0 |
+| 11 | VBUS_DETECT: Source: SIE_STATUS.VBUS_DETECTED | RO | 0x0 |
+| 10 | STALL: Source: SIE_STATUS.STALL_REC | RO | 0x0 |
+| 9 | ERROR_CRC: Source: SIE_STATUS.CRC_ERROR | RO | 0x0 |
+| 8 | ERROR_BIT_STUFF: Source: SIE_STATUS.BIT_STUFF_ERROR | RO | 0x0 |
+| 7 | ERROR_RX_OVERFLOW: Source: SIE_STATUS.RX_OVERFLOW | RO | 0x0 |
+| 6 | ERROR_RX_TIMEOUT: Source: SIE_STATUS.RX_TIMEOUT | RO | 0x0 |
+| 5 | ERROR_DATA_SEQ: Source: SIE_STATUS.DATA_SEQ_ERROR | RO | 0x0 |
+| 4 | BUFF_STATUS: Raised when any bit in BUFF_STATUS is set. Clear by clearing all bits in BUFF_STATUS. | RO | 0x0 |
+| 3 | TRANS_COMPLETE: Raised every time SIE_STATUS.TRANS_COMPLETE is set. Clear by writing to this bit. | RO | 0x0 |
+| 2 | HOST_SOF: Host: raised every time the host sends a SOF (Start of Frame). Cleared by reading SOF_RD | RO | 0x0 |
+| 1 | HOST_RESUME: Host: raised when a device wakes up the host. Cleared by writing to SIE_STATUS.RESUME | RO | 0x0 |
+| 0 | HOST_CONN_DIS: Host: raised when a device is connected or disconnected (i.e. when SIE_STATUS.SPEED changes). Cleared by writing to SIE_STATUS.SPEED | RO | 0x0 |
+
+USB: SOF_TIMESTAMP_RAW Register
+
+Offset: 0x100
+
+12.7. USB
+1179
+
+![Page 1181 figure](images/fig_p1181.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:21 | Reserved. | - | - |
+| 20:0 | Device only. Raw value of free-running PHY clock counter @48MHz. Used to calculate time between SOF events. | RO | 0x000000 |
+
+Table 1221.
+
+SOF_TIMESTAMP_RA
+
+W Register
+
+USB: SOF_TIMESTAMP_LAST Register
+
+Offset: 0x104
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:21 | Reserved. | - | - |
+| 20:0 | Device only. Value of free-running PHY clock counter @48MHz when last SOF event occured. | RO | 0x000000 |
+
+Table 1222.
+
+SOF_TIMESTAMP_LAS
+
+T Register
+
+USB: SM_STATE Register
+
+Offset: 0x108
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:12 | Reserved. | - | - |
+| 11:8 | RX_DASM | RO | 0x0 |
+| 7:5 | BC_STATE | RO | 0x0 |
+| 4:0 | STATE | RO | 0x00 |
+
+Table 1223.
+
+USB: EP_TX_ERROR Register
+
+Offset: 0x10c
+
+Description
+
+TX error count for each endpoint. Write to each field to reset the counter to 0.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:30 | EP15 | WC | 0x0 |
+| 29:28 | EP14 | WC | 0x0 |
+| 27:26 | EP13 | WC | 0x0 |
+| 25:24 | EP12 | WC | 0x0 |
+| 23:22 | EP11 | WC | 0x0 |
+| 21:20 | EP10 | WC | 0x0 |
+| 19:18 | EP9 | WC | 0x0 |
+| 17:16 | EP8 | WC | 0x0 |
+| 15:14 | EP7 | WC | 0x0 |
+| 13:12 | EP6 | WC | 0x0 |
+| 11:10 | EP5 | WC | 0x0 |
+| 9:8 | EP4 | WC | 0x0 |
+| 7:6 | EP3 | WC | 0x0 |
+
+Table 1224.
+
+EP_TX_ERROR
+
+Register
+
+12.7. USB
+1180
+
+![Page 1182 figure](images/fig_p1182.png)
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 5:4 | EP2 | WC | 0x0 |
+| 3:2 | EP1 | WC | 0x0 |
+| 1:0 | EP0 | WC | 0x0 |
+
+USB: EP_RX_ERROR Register
+
+Offset: 0x110
+
+Description
+
+RX error count for each endpoint. Write to each field to reset the counter to 0.
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31 | EP15_SEQ | WC | 0x0 |
+| 30 | EP15_TRANSACTION | WC | 0x0 |
+| 29 | EP14_SEQ | WC | 0x0 |
+| 28 | EP14_TRANSACTION | WC | 0x0 |
+| 27 | EP13_SEQ | WC | 0x0 |
+| 26 | EP13_TRANSACTION | WC | 0x0 |
+| 25 | EP12_SEQ | WC | 0x0 |
+| 24 | EP12_TRANSACTION | WC | 0x0 |
+| 23 | EP11_SEQ | WC | 0x0 |
+| 22 | EP11_TRANSACTION | WC | 0x0 |
+| 21 | EP10_SEQ | WC | 0x0 |
+| 20 | EP10_TRANSACTION | WC | 0x0 |
+| 19 | EP9_SEQ | WC | 0x0 |
+| 18 | EP9_TRANSACTION | WC | 0x0 |
+| 17 | EP8_SEQ | WC | 0x0 |
+| 16 | EP8_TRANSACTION | WC | 0x0 |
+| 15 | EP7_SEQ | WC | 0x0 |
+| 14 | EP7_TRANSACTION | WC | 0x0 |
+| 13 | EP6_SEQ | WC | 0x0 |
+| 12 | EP6_TRANSACTION | WC | 0x0 |
+| 11 | EP5_SEQ | WC | 0x0 |
+| 10 | EP5_TRANSACTION | WC | 0x0 |
+| 9 | EP4_SEQ | WC | 0x0 |
+| 8 | EP4_TRANSACTION | WC | 0x0 |
+| 7 | EP3_SEQ | WC | 0x0 |
+| 6 | EP3_TRANSACTION | WC | 0x0 |
+| 5 | EP2_SEQ | WC | 0x0 |
+
+Table 1225.
+
+EP_RX_ERROR
+
+Register
+
+12.7. USB
+1181
