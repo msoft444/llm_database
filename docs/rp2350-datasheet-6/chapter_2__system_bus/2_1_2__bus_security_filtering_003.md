@@ -1,0 +1,41 @@
+---
+source_pdf: rp2350-datasheet-6.pdf
+repository: llm_database
+chapter: Chapter 2. System bus
+section: 2.1.2. Bus security filtering
+pages: 26-26
+type: technical_spec
+generated_at: 2026-03-01T05:39:21.783275+00:00
+---
+
+# 2.1.2. Bus security filtering
+
+2.1.2. Bus security filtering
+
+Every point where the fabric connects to a downstream AHB or APB peripheral is interposed by a bus security filter,
+
+which enforces the following access control lists as defined by the ACCESSCTRL registers (Section 10.6):
+
+• A list of who can access the port: core 0, core 1, DMA, debugger
+• A list of the security states from which the port can be accessed: the four combinations of Secure/Non-secure and
+
+Privileged/Unprivileged.
+
+Accesses that fail either check are prevented from accessing the downstream port, and return a bus error upstream.
+
+There are three exceptions, which do not implement bus security filters because they implement their own security
+
+filtering internally:
+
+• The ACCESSCTRL block itself, which is always world-readable, but filters writes on security and privilege
+• Boot RAM, which is hardwired to Secure access only
+• The single-cycle IO subsystem (SIO), which is internally banked over Secure and Non-secure
+
+The Cortex-M Private Peripheral Bus (PPB) registers also lack ACCESSCTRL permissions because they are internal to
+
+the processors, not accessed through the system bus. The PPB registers are internally banked over Secure and Non-
+
+secure.
+
+2.1. Bus fabric
+25
