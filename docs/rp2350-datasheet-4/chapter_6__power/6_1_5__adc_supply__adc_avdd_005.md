@@ -1,0 +1,33 @@
+---
+source_pdf: rp2350-datasheet-4.pdf
+repository: llm_database
+chapter: Chapter 6. Power
+section: 6.1.5. ADC supply (ADC_AVDD)
+pages: 443-443
+type: technical_spec
+generated_at: 2026-03-01T03:27:49.792955+00:00
+---
+
+# 6.1.5. ADC supply (ADC_AVDD)
+
+6.1.5. ADC supply (ADC_AVDD)
+
+ADC_AVDD supplies the chip’s Analogue to Digital Converter (ADC). It can be powered at a nominal voltage between 1.8 V
+
+and 3.3 V, but the performance of the ADC will be compromised at voltages below 2.97 V. To reduce the number of
+
+external power supplies, ADC_AVDD can use the same power source as the core voltage regulator analogue supply
+
+(VREG_AVDD) or digital IO supply (IOVDD).
+
+NOTE
+
+It is safe to supply ADC_AVDD at a higher or lower voltage than IOVDD, e.g. to power the ADC at 3.3 V, for optimum
+
+performance, while supporting 1.8 V signal levels on the digital IO. But the voltage on the ADC analogue inputs must
+
+not exceed IOVDD, e.g. if IOVDD is powered at 1.8 V, the voltage on the ADC inputs should be limited to 1.8 V. Voltages
+
+greater than IOVDD will result in leakage currents through the ESD protection diodes. See Section 14.9 for details.
+
+ADC_AVDD should be decoupled with a 100nF capacitor close to the chip’s ADC_AVDD pin.

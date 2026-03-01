@@ -1,0 +1,122 @@
+---
+source_pdf: rp2350-datasheet-4.pdf
+repository: llm_database
+chapter: Chapter 7. Resets
+section: 7.5.3. List of Registers
+pages: 506-508
+type: technical_spec
+generated_at: 2026-03-01T03:27:49.792955+00:00
+---
+
+# 7.5.3. List of Registers
+
+![Page 506 figure](images/fig_p0506.png)
+
+7.5.3. List of Registers
+
+The reset controller registers start at a base address of 0x40020000 (defined as RESETS_BASE in SDK).
+
+7.5. Subsystem resets
+505
+
+RP2350 Datasheet
+
+![Page 507 figure](images/fig_p0507.png)
+
+Table 534. List of
+
+RESETS registers
+Offset
+Name
+Info
+
+RESETS: RESET Register
+
+Offset: 0x0
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:29 | Reserved. | - | - |
+| 28 | USBCTRL | RW | 0x1 |
+| 27 | UART1 | RW | 0x1 |
+| 26 | UART0 | RW | 0x1 |
+| 25 | TRNG | RW | 0x1 |
+| 24 | TIMER1 | RW | 0x1 |
+| 23 | TIMER0 | RW | 0x1 |
+| 22 | TBMAN | RW | 0x1 |
+| 21 | SYSINFO | RW | 0x1 |
+| 20 | SYSCFG | RW | 0x1 |
+| 19 | SPI1 | RW | 0x1 |
+| 18 | SPI0 | RW | 0x1 |
+| 17 | SHA256 | RW | 0x1 |
+| 16 | PWM | RW | 0x1 |
+| 15 | PLL_USB | RW | 0x1 |
+| 14 | PLL_SYS | RW | 0x1 |
+| 13 | PIO2 | RW | 0x1 |
+| 12 | PIO1 | RW | 0x1 |
+| 11 | PIO0 | RW | 0x1 |
+| 10 | PADS_QSPI | RW | 0x1 |
+| 9 | PADS_BANK0 | RW | 0x1 |
+| 8 | JTAG | RW | 0x1 |
+| 7 | IO_QSPI | RW | 0x1 |
+| 6 | IO_BANK0 | RW | 0x1 |
+| 5 | I2C1 | RW | 0x1 |
+| 4 | I2C0 | RW | 0x1 |
+| 3 | HSTX | RW | 0x1 |
+| 2 | DMA | RW | 0x1 |
+| 1 | BUSCTRL | RW | 0x1 |
+
+Table 535. RESET
+
+7.5. Subsystem resets
+506
+
+RP2350 Datasheet
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 0 | ADC | RW | 0x1 |
+
+RESETS: WDSEL Register
+
+Offset: 0x4
+
+| Bits | Description | Type | Reset |
+| --- | --- | --- | --- |
+| 31:29 | Reserved. | - | - |
+| 28 | USBCTRL | RW | 0x0 |
+| 27 | UART1 | RW | 0x0 |
+| 26 | UART0 | RW | 0x0 |
+| 25 | TRNG | RW | 0x0 |
+| 24 | TIMER1 | RW | 0x0 |
+| 23 | TIMER0 | RW | 0x0 |
+| 22 | TBMAN | RW | 0x0 |
+| 21 | SYSINFO | RW | 0x0 |
+| 20 | SYSCFG | RW | 0x0 |
+| 19 | SPI1 | RW | 0x0 |
+| 18 | SPI0 | RW | 0x0 |
+| 17 | SHA256 | RW | 0x0 |
+| 16 | PWM | RW | 0x0 |
+| 15 | PLL_USB | RW | 0x0 |
+| 14 | PLL_SYS | RW | 0x0 |
+| 13 | PIO2 | RW | 0x0 |
+| 12 | PIO1 | RW | 0x0 |
+| 11 | PIO0 | RW | 0x0 |
+| 10 | PADS_QSPI | RW | 0x0 |
+| 9 | PADS_BANK0 | RW | 0x0 |
+| 8 | JTAG | RW | 0x0 |
+| 7 | IO_QSPI | RW | 0x0 |
+| 6 | IO_BANK0 | RW | 0x0 |
+| 5 | I2C1 | RW | 0x0 |
+| 4 | I2C0 | RW | 0x0 |
+| 3 | HSTX | RW | 0x0 |
+| 2 | DMA | RW | 0x0 |
+| 1 | BUSCTRL | RW | 0x0 |
+| 0 | ADC | RW | 0x0 |
+
+Table 536. WDSEL
+
+RESETS: RESET_DONE Register
+
+7.5. Subsystem resets
+507

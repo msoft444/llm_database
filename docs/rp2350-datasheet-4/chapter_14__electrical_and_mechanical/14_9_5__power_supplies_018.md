@@ -1,0 +1,32 @@
+---
+source_pdf: rp2350-datasheet-4.pdf
+repository: llm_database
+chapter: Chapter 14. Electrical and mechanical
+section: 14.9.5. Power supplies
+pages: 1344-1344
+type: technical_spec
+generated_at: 2026-03-01T03:27:49.792955+00:00
+---
+
+# 14.9.5. Power supplies
+
+14.9.5. Power supplies
+
+| Power Supply | Supplies | Min | Typ | Max | Units |
+| --- | --- | --- | --- | --- | --- |
+| IOVDDa | Digital IO | 1.62 | 1.8 / 3.3 | 3.63 | V |
+| QSPI IOVDD _ (RP2350 only)a | Digital IO | 1.62 | 1.8 / 3.3 | 3.63 | V |
+| QSPI IOVDD _ (RP2354 only) | Digital IO | 2.97 | 3.3 | 3.63 | V |
+| DVDDb | Digital core | 1.05 | 1.1 | 1.16 | V |
+| VREG VIN _ | Voltage regulator | 2.7 | 3.3 | 5.5 | V |
+| VREG AVDD _ | Voltage regulator | 3.135 | 3.3 | 3.63 | V |
+
+Table 1441. Power
+
+14.9. Electrical specifications
+1343
+
+## Embedded Images
+
+![img_p1344_00.png](images/img_p1344_00.png)
+
